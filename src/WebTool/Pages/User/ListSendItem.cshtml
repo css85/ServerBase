@@ -1,0 +1,120 @@
+﻿@page
+@using WebTool.Controllers; 
+@model WebTool.Pages.User.ListSendItemModel
+@{
+    ViewData["Title"] = "아이템 지급 목록";
+    ViewData["ActiveMenu"] = "/User/ListSendItem";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div id="content-middle">
+    <div class="row">
+        <div class="col-12">
+            <table id="send-item-table" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+                <thead>
+                    <tr>
+                        @foreach (var column in MailController.SendMailListInfo)
+                        {
+                            <th>
+                                @column.Name
+                            </th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2/css/select2.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
+    <style>
+        .button-margin {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script>
+        let sendItemTable = $('#send-item-table');
+
+        sendItemTable.DataTable({
+            language: datatablesLangKor('@string.Join("','", MailController.SendMailListInfo.Select(p => p.Name))'),
+            autoWidth: false,
+            lengthChange: true,
+            paging: true,
+            searching: false,
+            info: false,
+            ordering: false,
+            pageLength: 10,
+            stateSave: true,
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: '/api/mail/send-item-table',
+                type: 'POST',
+                error: function (xhr, error, code) {
+                    alert(xhr.responseText);
+                },
+            },
+            columnDefs: [
+                {
+                    targets: 15,
+                    orderable: false,
+                },
+            ],
+            createdRow: function (row, data, dataIndex, cells) {
+                if (data[5] === 'cancel' || data[5] === 'partial cancellation') {
+                    $(cells[15]).html(`<button type="button" class="btn btn-block btn-secondary btn-xs" disabled="">취소됨</button>`);
+                } else {
+                    $(cells[15]).html(`<button type="button" class="btn btn-block btn-secondary btn-xs" onclick="cancelMail('${data[6]}', '${data[7]}')">취소</button>`);
+                }
+            }
+        });
+
+        function cancelMail(traceType, traceId) {
+            startLoading();
+            $.ajax({
+                type: 'POST',
+                url: '/api/mail/cancel-mail',
+                data: {
+                    traceType: traceType,
+                    traceId: traceId,
+                },
+                success: function (response) {
+                    alert('성공');
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert('실패\n' + xhr.responseText);
+                },
+                complete: function (response) {
+                    endLoading();
+                }
+            });
+        }
+
+        function startLoading() {
+            $('#loading').show();
+        }
+
+        function endLoading() {
+            $('#loading').hide();
+        }
+    </script>
+}

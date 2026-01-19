@@ -1,0 +1,24 @@
+{
+  "DatabaseSettings": {
+    "DatabaseProviderType": "MySQL",
+    "GateConnectionStrings": [
+      "Server=127.0.0.1;Port=3306;Database=gate;User=test;Password=test;Connect Timeout=30;SslMode=None;Min Pool Size=0;Max Pool Size=10;ConnectionReset=false"
+    ],
+    "UserConnectionStrings": [
+      "Server=127.0.0.1;Port=3306;Database=user;User=test;Password=test;Connect Timeout=30;SslMode=None;Min Pool Size=0;Max Pool Size=10;ConnectionReset=false"
+    ],
+    "StoreEventConnectionStrings": [
+      "Server=127.0.0.1;Port=3306;Database=store_event;User=test;Password=test;Connect Timeout=30;SslMode=None;Min Pool Size=0;Max Pool Size=10;ConnectionReset=false"
+    ],
+    "EnableQueryLogging": true
+  },
+  "RedisConfiguration": {
+    "Hosts": [
+      {
+        "Host": "127.0.0.1",
+        "Port": "6400"
+      }
+    ],
+    "Password": "test"
+  }
+}

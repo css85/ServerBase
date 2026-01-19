@@ -1,0 +1,144 @@
+﻿@page
+@using WebTool.Controllers;
+@using Shared
+@model WebTool.Pages.User.UserKickModel
+@{
+    ViewData["Title"] = "유저 킥";
+    ViewData["ActiveMenu"] = "/User/UserKick";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="content-top">
+    <div class="row">
+        <div class="col-8">
+            <label for="radio_total">
+                <input type="radio" name="Channel" id="radio_total" checked="checked" value="true"/>
+                전체 유저
+            </label>
+            <label for="radio_theMove">
+                <input type="radio" name="Channel" id="radio_theMove" value="false"/>
+                더 무브 채널 선택
+            </label>            
+        </div>
+        
+        @*<div class="col-8" style="margin-top: 20px;">
+            <strong style="margin-right: 10px;">사유</strong>
+            <select id="kick-reason">
+                <option value="0" selected>@(KickReasonResult.None)</option>
+                @for (var i = 1; i < Enum.GetValues<KickReasonResult>().Length; i++)
+                {
+                    <option value="@i">@ChannelController.ReasonToString(i)</option>
+                }
+            </select>
+        </div>*@
+        <div class="col-8" style="margin-top: 40px;">
+            <button type="button" id="executeKick" class="btn btn-secondary btn-lg" style="width:20%;">킥 실행</button>
+        </div>
+    </div>
+</div>
+
+<div class="content-middle" style="margin-top: 50px;">
+    <div class="row">
+        <div class="col-12">
+            <table id="KickHistory" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+                <thead>
+                    <tr>
+                       @* @foreach (var column in ChannelController.UserKickColumnsInfos)
+                        {
+                            <th>@column.Name</th>
+                        }*@
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
+    <style>
+        label {
+            margin-right: 20px;
+            margin-left: 10px;
+            background-color: white;
+        }
+
+        .input-custom {
+            background-color: white;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script>
+        let tableID = null;
+        let channelNumberValue = $('#channelNumber');
+        let kickExecuteButton = $('#executeKick');
+        let reasonValue = $('#kick-reason');
+
+        kickExecuteButton.click(function () {
+            let allUserKickValue = $('input[name=Channel]:checked').val();
+            let channelNumber = (allUserKickValue === "true") ? -1 : channelNumberValue.val();
+            let reason = reasonValue.val();
+            $.ajax({
+                url: '/api/channel/kick-users',
+                type: 'POST',
+                data: {
+                    ChannelId: channelNumber,
+                    Reason : reason,
+                },
+                success: function (response) {
+                    alert('성공');
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                },
+                complete: function (response) {
+                },
+            });
+        });
+
+
+        $(document).ready(function () {
+            tableID = $('#KickHistory').DataTable({
+                language: datatablesLangKor('관리자', '킥 실행 일시', '사유', '채널'),
+                autoWidth: false,
+                pageResize: true,
+                paging: true,
+                pageLength: 10,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                info: false,
+                stateSave: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/api/channel/user_kick_history',
+                    type: 'POST',
+                    data: {
+                    }
+                },
+                columnDefs: [
+                    {
+                        targets: 3,
+                        orderable: false
+                    }
+                ],
+                createdRow: function (row, data, dataIndex, cells) {
+                }
+            });
+        });
+    </script>
+}

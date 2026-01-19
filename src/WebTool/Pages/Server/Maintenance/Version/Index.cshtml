@@ -1,0 +1,210 @@
+﻿@page
+@using WebTool.Controllers;
+@model WebTool.Pages.Server.Config.Version.IndexModel
+@using Shared
+@{
+    ViewData["Title"] = "앱버전 관리";
+    ViewData["ActiveMenu"] = "/Server/Maintenance/Version/Index";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div>
+    <strong>OS Type</strong>
+    <select id="optype" style="margin-left:20px;">
+        @for (var i = 1; i < Enum.GetValues(typeof(OSType)).Length; i++)
+        {
+            OSType index = (OSType)i;
+            if (index == OSType.Android)
+            {
+                <option value="@(i)" selected>@index</option>
+            }
+            else
+            {
+                <option value="@(i)">@index</option>
+            }
+        }
+
+    </select>
+</div>
+
+<div style="margin-top:20px;">
+    <strong>버전 이름</strong>
+    <input type="text" id="input-version-name" style="margin-left: 10px;" />
+    <select id="addOrdelete" style="margin-left: 20px; height: 30px;">
+        <option value="add">추가</option>
+        <option value="delete">삭제</option>
+    </select>
+    <button type="button" class="btn btn-secondary" style="margin-left: 20px;" id="fix-data">확인</button>
+    <button type="button" class="btn btn-warning" style="margin-left:30px;" id="adjust-runtime">유저 킥</button>
+    <strong style="margin-left: 20px;">*플레이 중인 유저 중 버전이 맞지 않는 유저 강제 로그아웃</strong>
+    <br />
+
+</div>
+
+
+<div id="loading" style="display: none;">
+    <div class="overlay modal d-flex justify-content-center align-items-center" style="background: #00000055;">
+        <i class="fas fa-2x fa-sync fa-spin"></i>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script>
+        let loading = $('#loading');
+        let tableRoot = $('#version-table');
+        let selectOS = $('#optype');
+        let addOrDelete = $('#addOrdelete');
+        let controlData = $('#fix-data');
+        let inputVersionName = $('#input-version-name');
+        let adjustButton = $('#adjust-runtime');
+        let tableContent = null;
+        let selectOsValue = 1;
+
+        adjustButton.click(function () {
+            $.ajax({
+                url: '/api/server/userkick-notmatchversion',
+                type: 'POST',
+                data: {
+                },
+                success: function (res) {
+                    alert('성공');
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                },
+                complete: function (res) {
+                }
+            });
+        });
+
+        controlData.click(function () {
+            let versionName = inputVersionName.val();
+            let flag = addOrDelete.val();
+            let osType = selectOS.val();
+            startLoading();
+            $.ajax({
+                url: '/api/server/set-version-data',
+                type: 'POST',
+                data: {
+                    OsType: osType,
+                    Name: versionName,
+                    Flag: flag,
+                },
+                success: function (result) {
+                    alert('성공');
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                },
+                complete: function (result) {
+                    endLoading();
+                    location.reload();
+                }
+            });
+        });
+
+        selectOS.change(function () {
+            selectOsValue = $(this).val();
+            showTable();
+        });
+
+        $(document).ready(function () {
+            showTable();
+        });
+
+        function showTable() {
+            if (tableContent !== null) {
+                tableRoot.DataTable().clear().destroy();
+            }
+
+            tableContent = tableRoot.DataTable({
+                language: datatablesLangKor('접속 가능 버전', '검수 서버 여부', '설정'),
+                autoWidth: false,
+                lengthChange: false,
+                paging: false,
+                searching: false,
+                info: false,
+                stateSave: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/api/server/load-version',
+                    type: 'POST',
+                    data: {
+                        OsType: selectOsValue,
+                    }
+                },
+                columnDefs: [
+                    {
+                        targets: 3,
+                        orderable: false,
+                    },
+                ],
+                createdRow: function (row, data, dataIndex, cells) {
+                    $(cells[3]).html('<button type="button" class="btn btn-info btn-sm text-center" onclick="onSetInspector(' + selectOsValue + ',' + data[1] + ','
+                        + "'" + data[2] + "'" + ')">변경</button>');
+                }
+            });
+        }
+
+        function TestConsole(data, data2, data3) {
+            console.log(data);
+            console.log(data2);
+            console.log(data3);
+        }
+
+        function onSetInspector(osType, version, isInspector) {
+            let acceptChange = false;
+            let isDelete = false;
+
+            if (isInspector === 'O') {
+                acceptChange = confirm('검수 서버에서 제외하시겠습니까?');
+                isDelete = true;
+            }
+            else {
+                acceptChange = confirm('검수 서버로 등록하시겠습니까?');
+                isDelete = false;
+            }
+
+            if (acceptChange) {
+                startLoading();
+                $.ajax({
+                    url: '/api/server/regist-inspector',
+                    type: 'POST',
+                    data: {
+                        OsType: osType,
+                        Version: version,
+                        Flag: isDelete,
+                    },
+                    success: function (res) {
+                        alert('성공');
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    },
+                    complete: function (res) {
+                        endLoading();
+                        location.reload();
+                    }
+                });
+            }
+        }
+
+        function startLoading() {
+            loading.show();
+        }
+
+        function endLoading() {
+            loading.hide();
+        }
+    </script>
+}

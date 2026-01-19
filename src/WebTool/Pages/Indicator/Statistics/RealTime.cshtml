@@ -1,0 +1,71 @@
+﻿@page
+@model WebTool.Pages.Indicator.Statistics.RealtimeModel
+@{
+    ViewData["Title"] = "실시간(시간단위)";
+    ViewData["ActiveMenu"] = "/Indicator/Statistics/Realtime";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="row paragraph">
+    <div class="col-md-3 col-sm-12">
+        <div id="SearchDate" class="input-group" data-target-input="nearest">
+            <input type="text" id="SearchDateValue" class="form-control" data-target="#SearchDate" />
+            <div class="input-group-append" data-target="#SearchDate" data-toggle="datetimepicker">
+                <div class="input-group-text">
+                    <i class="far fa-calendar"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" id="search" class="btn btn-secondary btn-space">검색</button>
+    <button type="button" id="today" class="btn btn-secondary btn-space">오늘</button>
+    <button type="button" id="yesterday" class="btn btn-secondary btn-space">어제</button>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <table id="table-connection-log" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+            <thead>
+                <tr>
+                    @for (var i = 0; i < Model.columnHeader.Length; i++)
+                    {
+                        <th>@Model.columnHeader[i]</th>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .btn-space {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .paragraph {
+            margin-bottom: 30px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css"></script>
+    <script>
+        let btnSearch = $('#search');
+        let btnToday = $('#today');
+        let btnYesterday = $('#yesterday');
+
+        $(document).ready(function () {
+            $('#SearchDate').datetimepicker(dateTimePickerOption_UtcNow_WithoutTime);
+        });
+    </script>
+}

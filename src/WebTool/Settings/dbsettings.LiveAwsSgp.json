@@ -1,0 +1,24 @@
+{
+  "DatabaseSettings": {
+    "DatabaseProviderType": "MySQL",
+    "GateConnectionStrings": [
+      "Server=audition-db.cluster-ck6kqc9kllq2.ap-southeast-1.rds.amazonaws.com;Port=3306;Database=gate;User=12moments;Password=0WlHVZx7ixpKX4SUrLxN;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "UserConnectionStrings": [
+      "Server=audition-db.cluster-ck6kqc9kllq2.ap-southeast-1.rds.amazonaws.com;Port=3306;Database=eve;User=12moments;Password=0WlHVZx7ixpKX4SUrLxN;Min Pool Size=0;Max Pool Size=200;ConnectionReset=true;"
+    ],
+    "StoreEventConnectionStrings": [
+      "Server=audition-db.cluster-ck6kqc9kllq2.ap-southeast-1.rds.amazonaws.com;Port=3306;Database=eve_store_event;User=12moments;Password=0WlHVZx7ixpKX4SUrLxN;Min Pool Size=0;Max Pool Size=200;ConnectionReset=true;"
+    ],
+    "WebToolConnectionString": "Server=audition-db.cluster-ck6kqc9kllq2.ap-southeast-1.rds.amazonaws.com;Port=3306;Database=app;User=12moments;Password=0WlHVZx7ixpKX4SUrLxN;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;",
+    "EnableQueryLogging": false
+  },
+  "RedisConfiguration": {
+    "Hosts": [
+      {
+        "Host": "audition-redis.dpwpmk.ng.0001.apse1.cache.amazonaws.com",
+        "Port": "6379"
+      }
+    ]
+  }
+}

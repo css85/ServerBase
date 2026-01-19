@@ -1,0 +1,136 @@
+﻿@page
+@using Shared
+@model WebTool.Pages.Operation.Command.SendModel
+@{
+    ViewData["Title"] = "커맨드 발송";
+    ViewData["ActiveMenu"] = "/Operation/Command/Send";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<table class="table table-bordered text-center">
+    <tbody>
+    <tr>
+        <td>
+            서비스타입
+        </td>
+        <td>
+            <div class="row mt-2">
+                <div class="col-md-12">
+                    <div>
+                        <select id="serviceType" asp-for="NetServiceType" class="form-control" asp-items="@Html.GetEnumSelectList<NetServiceType>()">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <strong>커맨드</strong>
+        </td>
+        <td>
+            <div class="row">
+                <div class="col-md-11">
+                    <input type="text" class="form-control" id="commandName" placeholder="커맨드명">
+                </div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <strong>명령어</strong>
+        </td>
+        <td>
+            <div class="row">
+                <div class="col-md-11">
+                    <input type="text" class="form-control" id="messageText" placeholder="커맨드 명령어">
+                </div>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<div class="table">
+    <div class="row">
+        <button type="button" class="btn btn-primary pl-5 pr-5" onclick="sendMessage('Gate','up-gate','up-gate')">up-gate</button>
+    </div>
+
+    <div class="row" style="flex-direction: row-reverse;">
+        <button type="button" class="btn btn-danger btn-lg pl-5 pr-5" onclick="sendPush()"><i class="far fa-paper-plane"></i> 발송</button>
+    </div>
+</div>
+
+<div id="loading" style="display: none;">
+    <div class="overlay modal d-flex justify-content-center align-items-center" style="background: #00000055;">
+        <i class="fas fa-2x fa-sync fa-spin"></i>
+    </div>
+</div>
+
+@section Styles
+{
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css"/>
+    <link rel="stylesheet" href="~/plugins/select2/css/select2.min.css"/>
+    <link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css"/>
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css"/>
+    <style>
+        table tr td {
+            vertical-align: middle !important;
+        }
+    </style>
+}
+
+@section Scripts
+{
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css"></script>
+    <script>
+        function sendMessage(netServiceType, commandName,messageText) {
+            $.ajax({
+                            type: 'POST',
+                            url: '/api/operation/internal-command/send',
+                            data: {
+                                serviceType: netServiceType,
+                                commandName: commandName,
+                                messageText: messageText
+                            },
+                            success: function (response) {
+                                if (response.ret_code!=0)
+                                    alert('서버에러[' + response.ret_code +']');
+                                else
+                                    alert('성공');
+                                
+                                location.reload();
+                            },
+                            error: function (xhr, status, error) {
+                                alert('실패\n' + xhr.responseText);
+                            },
+                            complete: function (response) {
+                                $('#editModal').modal('hide');
+                                endLoading();
+                            }
+                        });
+    }
+    
+        function sendPush() {
+            let netServiceType = $('#serviceType').val();
+            let commandName = $('#commandName').val();
+            let messageText = $('#messageText').val();
+            sendMessage(netServiceType,commandName,messageText);
+        }
+
+
+        function startLoading() {
+            $('#loading').show();
+        }
+
+        function endLoading() {
+            $('#loading').hide();
+        }
+    </script>
+}

@@ -1,0 +1,186 @@
+﻿@page
+@using WebTool.Controllers; 
+@model WebTool.Pages.User.UserWindowPopup.DetailCostumeInfoModel
+@{
+    Layout = "_LayoutContentsOnly";
+}
+
+<div class="col-12">
+    <div class="card card-primary card-outline card-outline-tabs">
+        <div class="card-header p-0 border-bottom-0">
+            <ul class="nav nav-tabs" id="tabs" role="tablist">
+                @*<li class="nav-item">
+                    <a class="nav-link active" id="tab-current-avatar" data-toggle="tab" data-load="currentavatar" role="tab" aria-selected="true">착용</a>
+                </li>*@
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-total-parts" data-toggle="tab" role="tab" data-load="totalparts" aria-selected="false">보유</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+@*<div id="tab-currentparts-table">
+    <table id="currentavatar-table" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+        <thead>
+            <tr>
+                @foreach (var column in UserController.MyCurrentPartsDetailInfo)
+                {
+                    <th>
+                        @column.Name
+                    </th>
+                }
+            </tr>
+        </thead>
+    </table>
+</div>*@
+
+<div id="tab-totalparts">
+    <div class="row">
+        <div class="col-12">
+            <button type="button" class="btn-dark">@Html.ActionLink("엑셀", "ExportTotalPartsData", "UserController", new { userSeq = Model.UserSeq})</button>
+            <table id="totalparts-table" class="table table-bordered table-striped table-hover dataTable dtr-inline">
+                <thead>
+                    <tr>
+                        @foreach (var column in UserController.MyTotalPartsDetailInfo)
+                        {
+                            <th>
+                                @column.Name
+                            </th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div>
+    <input type="hidden" id="save-user-id" value="@Model.UserSeq" />
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
+    <style>
+        .content-button {
+            margin: 0.5rem;
+        }
+
+        .player-info-card .card-body {
+            margin: 0;
+            padding: 0.625rem;
+        }
+
+        .player-tabs {
+            padding: 0.375rem;
+            min-height: 802px;
+        }
+
+        th {
+            table-layout: fixed;
+        }
+    </style>
+}
+
+@section Scripts
+{
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script>
+        let currentParts = $('#tab-currentparts-table');
+        let totalParts = $('#tab-totalparts');
+        let currentPartsTable = null;
+        let totalPartsTable = null;
+        let userID = $('#save-user-id');
+
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            $this = $(e.target);
+
+            var type = $this.data("load");
+
+            showTable(type);
+        });
+
+        $(document).ready(function () {
+            showTable("totalparts");
+        });
+
+        function showTable(type) {
+            currentParts.hide();
+            totalParts.hide();
+            let userSeq = userID.val();
+            if (type == "totalparts") {
+                if (totalPartsTable === null) {
+                    totalPartsTable = $('#totalparts-table').DataTable({
+                        language: datatablesLangKor('Index', 'FileName', 'Costume Name', 'ShopType', '상품 기한', '소멸 일자'),
+                        autoWidth: false,
+                        lengthChange: false,
+                        searching: false,
+                        info: false,
+                        paging: false,
+                        stateSave: true,
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url: '/api/user/parts-total-table-data',
+                            type: 'POST',
+                            data: {
+                                UserSeq: userSeq,
+                            },
+                            columnDefs: [
+                                {
+                                    target: 5,
+                                    orderable: false
+                                }
+                            ],
+                            createRow: function (row, data, dataIndex, cells) {
+                            }
+                        }
+                    });
+                } else {
+                    totalPartsTable.ajax.reload();
+                }
+                totalParts.show();
+            }
+            else {
+                if (currentPartsTable === null) {
+                    currentPartsTable = $('#currentparts-table').DataTable({
+                        language: datatablesLangKor('부위', '파일 이름', '판매처', '기간', '아이템 이름', '소멸 일자'),
+                        autoWidth: false,
+                        lengthChange: false,
+                        paging: false,
+                        searching: false,
+                        info: false,
+                        stateSave: true,
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url: '/api/user/parts-current-table-data',
+                            type: 'POST',
+                            data: {
+                                userSeq: userSeq,
+                            },
+                            columnDefs: [
+                                {
+                                    target: 5,
+                                    orderable: false
+                                }
+                            ],
+                            createRow: function (row, data, dataIndex, cells) {
+                            }
+                        }
+                    });
+                } else {
+                    currentPartsTable.ajax.reload();
+                }
+                currentParts.show();
+            }
+        }
+
+    </script>
+}
+

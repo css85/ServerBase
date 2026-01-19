@@ -1,0 +1,1 @@
+dotnet ../TestConsoleApp.dll user-send-mail-stress --api-host "http://127.0.0.1:46000" --target-host "127.0.0.1:46004" --users 2000 --request-delay 1000 --target-user_seq "1,2,3,4"

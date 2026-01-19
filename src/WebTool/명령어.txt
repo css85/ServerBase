@@ -1,0 +1,10 @@
+cd D:\AuditionM_Server\src\WebTool
+
+DB 초기화
+dotnet-ef migrations add InitCreateWebToolDb -c WebToolCtx -o Database/Migrations/WebTool
+
+DB 적용
+dotnet-ef database update -c WebToolCtx -- --environment Development --index 0;
+
+DB 스냅샷 적용 취소
+dotnet-ef migrations remove -c WebToolCtx

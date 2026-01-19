@@ -1,0 +1,343 @@
+﻿@page
+@using WebTool.Controllers; 
+@model WebTool.Pages.User.UserBlockModel
+@{
+    ViewData["Title"] = "유저 블록/해제";
+    ViewData["ActiveMenu"] = "/User/UserBlock";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="content-top">
+    <button type="button" class="btn-secondary btn-lg" id="BlockAndRelease" style="margin-right: 30px;">블락/해제</button>
+    <button type="button" class="btn-secondary btn-lg" id="Log">로그</button>
+</div>
+
+<div id="block-content-middle" style="margin-top: 30px;">
+    <div class="row" style="margin-top: 10px; width: 80%;">
+        <div class="col-md-11">
+            <textarea id="sendTargetText" class="form-control" rows="3" placeholder="';'으로 구분된 userSeq"></textarea>
+        </div>
+        <div class="col-md-1">
+            <button id="sendTargetButton" type="button" class="btn btn-block btn-primary btn-lg" style="height: 100%;" onclick="onUserSelectClicked()">+</button>
+        </div>
+        <div class="col-md-10">
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn-secondary btn-lg" id="Search" style="margin-top: 20px; width: 100%;">검색</button>
+        </div>
+    </div>
+    <hr size="2" width="100%" color="black" />
+    <div class="row">
+        <div class="col-6">
+            <table id="blockTable" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+                <thead>
+                    <tr>
+                        @foreach (var column in UserController.SearchUserBlockInfo)
+                        {
+                            <th>
+                                @column.Name
+                            </th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div class="col-6 text-center" style="margin-top:20px;">
+            <input type="radio" id="OneDay" name="blockDay" value="1" style="margin-right: 5px;" checked />
+            <label for="OneDay" style="margin-right: 10px;">
+                1일
+            </label>
+            <input type="radio" id="Week" name="blockDay" value="7" style="margin-right: 5px;" />
+            <label for="Week" style="margin-right: 10px;">
+                7일
+            </label>
+            <input type="radio" id="Month" name="blockDay" value="30" style="margin-right: 5px;" />
+            <label for="Month" style="margin-right: 10px;">
+                30일
+            </label>
+            <input type="radio" id="Forever" name="blockDay" value="0" style="margin-right: 5px;" />
+            <label for="Forever" style="margin-right: 10px;">
+                영구
+            </label>
+            <br />
+            <div style="margin-top: 10px;">
+                <a style="margin-top: 20px;">블락 사유</a>
+                <input type="text" style="width: 70%;" id="inputReason" />
+                <br />
+                <button type="button" class="btn-secondary btn-lg" style="color:blue; margin-top: 30px;" id="allRelease">일괄 블락 해제</button>
+                <br />
+                <button type="button" class="btn-secondary btn-lg" style="color: red; margin-top: 30px;" id="allBlockOrExtend">일괄 블락 +연장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="log-content-middle" style="margin-top: 30px;">
+    <div class="row">
+        <div class="col-md-3 col-sm-6">
+            <div id="LookupStart" class="input-group" data-target-input="nearest">
+                <input type="text" id="LookupStartValue" class="form-control" data-target="#LookupStart" />
+                <div class="input-group-append" data-target="#LookupStart" data-toggle="datetimepicker">
+                    <div class="input-group-text">
+                        <i class="far fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a><strong>~</strong></a>
+        <div class="col-md-3 col-sm-6">
+            <div id="LookupEnd" class="input-group" data-target-input="nearest">
+                <input type="text" id="LookupEndValue" class="form-control" data-target="#LookupEnd" />
+                <div class="input-group-append" data-target="#LookupEnd" data-toggle="datetimepicker">
+                    <div class="input-group-text">
+                        <i class="far fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn-secondary text-center" style="margin-left: 30px;" id="lookupLog">조회</button>
+    </div>
+    <button type="button" class="btn-dark btn-sm" style="float:right; margin-right: 20px; margin-bottom: 20px;" id="export-csv">엑셀</button>
+    <table id="log-table" class="table table-bordered table-striped table-hover dataTable dtr-inline">
+        <thead>
+            <tr>
+                @foreach (var column in UserController.UserBlockInfo)
+                {
+                    <td>
+                        @column.Name
+                    </td>
+                }
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<div id="loading" style="display: none;">
+    <div class="overlay modal d-flex justify-content-center align-items-center" style="background: #00000055;">
+        <i class="fas fa-2x fa-sync fa-spin"></i>
+    </div>
+</div>
+
+
+@section Styles {
+    <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
+}
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script>
+        let blockContentRoot = $('#block-content-middle');
+        let logContentRoot = $('#log-content-middle');
+        let btnBlockContent = $('#BlockAndRelease');
+        let btnLogContent = $('#Log');
+        let searchButton = $('#Search');
+        let reasonField = $('#inputReason');
+        let allBlockRelease = $('#allRelease');
+        let allBlockOrExtend = $('#allBlockOrExtend');
+        let logTableRoot = $('#log-table');
+        let blockTable = $('#blockTable');
+        let lookupStartValue = $('#LookupStartValue');
+        let lookupEndValue = $('#LookupEndValue');
+        let lookupLogsButton = $('#lookupLog');
+        let exportCSVButton = $('#export-csv');
+        let sendTargetText = $('#sendTargetText');
+        let loadingModal = $('#loading');
+        let blockTableContent = null;
+        let logTableContent = null;
+        let saveFromDtValue = null;
+        let saveToDtValue = null;
+
+        //검색된 유저들 모두 블록 해제
+        allBlockRelease.click(function () {
+            let sendData = sendTargetText.val();
+            let reason = reasonField.val();
+
+            startLoading();
+            $.ajax({
+                url: '/api/user/block-release',
+                type: 'POST',
+                data: {
+                    targetText: sendData,
+                    unblockreason: reason,
+                },
+                success: function (result) {
+                    alert('성공');
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                },
+                complete: function () {
+                    endLoading();
+                }
+            });
+        });
+
+        //검색된 유저들 블록 또는 연장
+        allBlockOrExtend.click(function () {
+            let sendTarget = sendTargetText.val();
+            let reason = reasonField.val();
+            let blockDay = $('input[name=blockDay]:checked').val();
+            startLoading();
+
+            $.ajax({
+                url: '/api/user/block-extend',
+                type: 'POST',
+                data: {
+                    targetText: sendTarget,
+                    selectDay: blockDay,
+                    blockreason: reason,
+                },
+                success: function (result) {
+                    alert('성공');
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                },
+                complete: function () {
+                    endLoading();
+                }
+            });
+        });
+
+        searchButton.click(function () {
+            let targetID = sendTargetText.val();
+
+            if (blockTableContent !== null) {
+                blockTable.DataTable().clear().destroy();
+            }
+
+            blockTableContent = blockTable.DataTable({
+                language: datatablesLangKor('ID', '닉네임', '계정 상태', '블락 일시', '블락 해제 일시'),
+                autoWidth: false,
+                lengthChange: false,
+                paging: false,
+                searching: false,
+                info: false,
+                stateSave: true,
+                serverSide: true,
+                ajax: {
+                    url: '/api/user/search-userblock-log',
+                    type: 'POST',
+                    data: {
+                        sendTargetText: targetID,
+                    },
+                    columnDefs: [
+                        {
+                            targets: 4,
+                            orderable: false,
+                        },
+                    ],
+                    createRow: function (row, data, dataIndex, cells) {
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                }
+            });
+        });
+
+        btnBlockContent.click(function () {
+            activeBlockContent();
+        });
+
+        btnLogContent.click(function () {
+            activeLogContent();
+        });
+
+        lookupLogsButton.click(function () {
+            showTable();
+        });
+
+        exportCSVButton.click(function () {
+            exportCSVFile();
+        });
+
+        $(document).ready(function () {
+            $('#LookupStart').datetimepicker(dateTimePickerOption_UtcNow);
+            $('#LookupEnd').datetimepicker(dateTimePickerOption_UtcNow);
+            activeBlockContent();
+        });
+
+        function activeBlockContent() {
+            logContentRoot.hide();
+            blockContentRoot.show();
+        }
+
+        function activeLogContent() {
+            blockContentRoot.hide();
+            logContentRoot.show();
+        }
+
+        function onUserSelectClicked() {
+            openUserSelectPopup(
+                function (userSeq) {
+                    let currentText = sendTargetText.val();
+                    if (currentText !== '') {
+                        currentText += `;${userSeq}`;
+                    } else {
+                        currentText = `${userSeq}`;
+                    }
+                    sendTargetText.val(currentText);
+                });
+        }
+
+        function showTable() {
+            if (logTableContent !== null) {
+                logTableRoot.DataTable().clear().destroy();
+            }
+
+            saveFromDtValue = lookupStartValue.val();
+            saveToDtValue = lookupEndValue.val();
+
+            logTableContent = logTableRoot.DataTable({
+                language: datatablesLangKor('ID', '닉네임', '블락 일시', '블락해제 일시', '관리자', '사유', '처리 일시'),
+                autoWidth: false,
+                lengthChange: false,
+                paging: true,
+                searching: false,
+                info: false,
+                ordering: false,
+                stateSave: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/api/user/lookup-block-user',
+                    type: 'POST',
+                    data: {
+                        From: saveFromDtValue,
+                        To: saveToDtValue,
+                    },
+                    columnDefs: [
+                        {
+                            targets: 6,
+                            orderable: false,
+                        },
+                    ],
+                    createRow: function (row, data, dataIndex, cells) {
+                    }
+                },
+            });
+        }
+
+        function exportCSVFile() {
+            window.location.href = "@Url.Action("ExportUserBlockLogToCSV", "User")" + "?From=" + saveFromDtValue + "&To=" + saveToDtValue;
+        }
+
+        function startLoading() {
+            loadingModal.show();
+        }
+        function endLoading() {
+            loadingModal.hide();
+        }
+    </script>
+}

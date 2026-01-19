@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<LangVersion>default</LangVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<WarningLevel>0</WarningLevel>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Shared.Repository\Shared.Repository.csproj" />
+		<ProjectReference Include="..\Shared.Server\Shared.Server.csproj" />
+		<ProjectReference Include="..\Shared.TcpNetwork\Shared.TcpNetwork.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="Ben.Demystifier" Version="0.4.1" />
+	  <PackageReference Include="Elastic.Apm" Version="1.12.1" />
+	  <PackageReference Include="Elasticsearch.Net" Version="7.16.0" />
+	  <PackageReference Include="LitJWT" Version="1.2.0" />
+	</ItemGroup>
+
+</Project>

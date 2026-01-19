@@ -1,0 +1,54 @@
+﻿@model WebTool.Pages.User.UserInfoDetailModel
+@{
+    var id = "Account";
+}
+
+<div>
+    <input type="hidden" id="save-user-id" value="@Model.Info.UserSeq" />
+</div>
+
+<script>
+    let userText = $('#save-user-id');
+
+    function registerTable@(id)() {
+        let userSeq = userText.val();
+        window.setTabTableFunctionMap('@id', function() {
+            var table = window.getTabTableMap('@id');
+            if (table === undefined) {
+                var viewTable = $('#@Model.Info.UserSeq-@id-table');
+                table = viewTable.DataTable({
+                    language: datatablesLangKor(),
+                    autoWidth: false,
+                    stateSave: true,
+                    lengthMenu: [10, 15, 20, 30, 50, 100],
+                    pageLength: 10,
+                    searching: false,
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: '/api/user/account-table-data',
+                        type: 'POST',
+                        data: function (d) {
+                            d.userSeq = userSeq;
+                        }
+                    },
+                    columnDefs: [
+                        {
+                            targets: 0,
+                            orderable: false
+                        },
+                        {
+                            targets: 1,
+                            orderable: false
+                        }
+                    ]
+                });
+
+                viewTable.show();
+                window.setTabTableMap('@id', table);
+            }
+
+            return table;
+        });
+    }
+</script>

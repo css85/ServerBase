@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+
+    <title>@ViewData["Title"] - Eves</title>
+    @await RenderSectionAsync("Styles", false)
+    <partial name="_Styles" />
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+    <div class="content-wrapper" style="margin-left: 0;">
+        <div class="content" style="padding: 10px;">
+            <div class="container-fluid">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+</div>
+<partial name="_Scripts" />
+@await RenderSectionAsync("Scripts", false)
+</body>
+</html>

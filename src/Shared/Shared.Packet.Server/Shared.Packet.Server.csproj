@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <LangVersion>default</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="..\Shared.Packet\**\*.*">
+            <Link>Shared.Packet/%(RecursiveDir)%(FileName)%(Extension)</Link>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="..\Shared.Packet\Models\Inventory\InventoryItemInfo.cs" />
+      <Compile Remove="..\Shared.Packet\PacketModel\Account\AccountAuthCheckPacket.cs" />
+      <Compile Remove="..\Shared.Packet\PacketModel\Account\AccountLoginPacket.cs" />
+      <Compile Remove="..\Shared.Packet\PacketModel\Account\GateAuthCheckPacket.cs" />
+      <Compile Remove="..\Shared.Packet\PacketModel\Account\GateAuthPacket.cs" />
+      <Compile Remove="..\Shared.Packet\PacketModel\Avatar\AvatarChangeNickPacket.cs" />
+      <Compile Remove="..\Shared.Packet\PacketModel\Avatar\AvatarChangeSkinColorPacket.cs" />
+      <Compile Remove="..\Shared.Packet\SharedDefine_Event.cs" />
+      <Compile Remove="..\Shared.Packet\SharedDefine_Fam.cs" />
+      <Compile Remove="..\Shared.Packet\SharedDefine_Option.cs" />
+      <Compile Remove="..\Shared.Packet\SharedDefine_Skill.cs" />
+      <Compile Remove="..\Shared.Packet\SharedDefine_SponsorChance.cs" />
+      <Compile Remove="..\Shared.Packet\SharedDefine_Store.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shared.Clock\Shared.Clock.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="7.0.15" />
+    </ItemGroup>
+
+</Project>

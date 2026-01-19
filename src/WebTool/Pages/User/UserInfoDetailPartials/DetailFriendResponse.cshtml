@@ -1,0 +1,53 @@
+﻿@model WebTool.Pages.User.UserInfoDetailModel
+@{
+    var id = $"FriendResponse";
+}
+
+<div>
+    <input type="hidden" id="save-user-id" value="@Model.Info.UserSeq" />  
+</div>
+
+<script>
+    let userTextFriendRes = $('#save-user-id');
+
+    function registerTable@(id)() {
+        let userSeq = userTextFriendRes.val();
+        window.setTabTableFunctionMap('@id', function() {
+            var table = window.getTabTableMap('@id');
+            if (table === undefined) {
+                var viewTable = $('#@Model.Info.UserSeq-@id-table');   
+                table = viewTable.DataTable({
+                    language: datatablesLangKor('UserSeq, 닉네임'),
+                    autoWidth: false,
+                    pageResize: true,
+                    stateSave: true,
+                    lengthMenu: [10, 15, 20, 30, 50, 100],
+                    pageLength: 10,
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: '/api/user/friend-response-table-data',
+                        type: 'POST',
+                        data: function (d) {
+                            d.userSeq = userSeq;
+                        }
+                    },
+                    columnDefs: [
+                        {
+                            targets: 3,
+                            orderable: false
+                        }
+                    ],
+                    createdRow: function(row, data, dataIndex, cells) {
+                        $(cells[3]).html('<a href="@Url.PageLink("/Player/Detail")?userSeq=' + data[3] + '" class="btn btn-info btn-sm"><i class="fas fa-info-circle"/> 상세정보</a>');
+                    }
+                });
+
+                viewTable.show();
+                window.setTabTableMap('@id', table);
+            }
+
+            return table;
+        });
+    }
+</script> 

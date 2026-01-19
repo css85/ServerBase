@@ -1,0 +1,49 @@
+﻿{
+  "DatabaseSettings": {
+    "DatabaseProviderType": "MySQL",
+    "GateConnectionStrings": [
+      "Server=localhost;Port=3306;Database=db;User=bluegames;Password=123qwe!@#;Min Pool Size=0;Max Pool Size=10;ConnectionReset=true;"
+    ],
+    "ExchangeConnectionStrings": [
+      "Server=localhost;Port=3306;Database=db;User=bluegames;Password=123qwe!@#;Min Pool Size=0;Max Pool Size=10;ConnectionReset=true;"
+    ],
+    "AccountConnectionStrings": [
+      "Server=localhost;Port=3306;Database=db;User=bluegames;Password=123qwe!@#;Min Pool Size=0;Max Pool Size=10;ConnectionReset=true;"
+    ],
+    "UserConnectionStrings": [
+      "Server=localhost;Port=3306;Database=db;User=bluegames;Password=123qwe!@#;Min Pool Size=0;Max Pool Size=10;ConnectionReset=true;"
+    ],
+    "ChatConnectionStrings": [
+      "Server=localhost;Port=3306;Database=db;User=bluegames;Password=123qwe!@#;Min Pool Size=0;Max Pool Size=10;ConnectionReset=true;"
+    ],
+    "MailConnectionStrings": [
+      "Server=localhost;Port=3306;Database=db;User=bluegames;Password=123qwe!@#;Min Pool Size=0;Max Pool Size=10;ConnectionReset=true;"
+    ],
+    "WebToolConnectionString": "Server=127.0.0.1;Port=3306;Database=db;User=bluegames;Password=123qwe!@#;Connect Timeout=30;Min Pool Size=0;Max Pool Size=10;ConnectionReset=true;",
+    "RedisAdminHostAndPort": "localhost:6379"
+  },
+  "RedisConfiguration": {
+    "AbortOnConnectFail": false,
+    "Password": "my_super_secret_password",
+    "AllowAdmin": true,
+    "Ssl": false,
+    "ConnectTimeout": 10000,
+    "SyncTimeout": 10000,
+    "ConnectRetry": 2,
+    "Database": 0,
+    "Hosts": [
+      {
+        "Host": "localhost",
+        "Port": "6379"
+      }
+    ],
+    "ServerEnumerationStrategy": {
+      "Mode": "All",
+      "TargetRole": "Any",
+      "UnreachableServerAction": "Throw"
+    },
+    "MaxValueLength": 1024,
+    "PoolSize": 10,
+    "KeyPrefix": "_"
+  }
+}

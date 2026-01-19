@@ -1,0 +1,358 @@
+﻿@page
+@model WebTool.Pages.Operation.Notice.NoticeModel
+@{
+    ViewData["Title"] = "공지";
+    ViewData["ActiveMenu"] = "/Operation/Notice/Notice";
+
+    const int itemSize = 5;
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<table class="table table-bordered text-center">
+    <tbody>
+        <tr>
+            <td><strong>제목</strong></td>
+            <td>
+                <div class="row">
+                    <div class="col-md-11">
+                        <input type="text" class="form-control" id="title" readonly="" />
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" id="inputTitle" class="btn btn-block btn-primary">수정</button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td><strong>수신인</strong></td>
+            <td>
+                <div class="row">
+                    <div class="col-md-11">
+                        <textarea id="sendTargetText" class="form-control" rows="3" placeholder="';'으로 구분된 userSeq"></textarea>
+                    </div>
+                    <div class="col-1">
+                        <button id="sendTargetButton" type="button" class="btn btn-block btn-primary btn-lg" style="height: 100%;">+</button>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-12">
+                        <div>
+                            <div class="icheck-primary d-inline mr-2">
+                                <input type="radio" id="sendUserRadio1" name="sendUserRadio" value="1">
+                                <label for="sendUserRadio1">
+                                    모든 유저
+                                </label>
+                            </div>
+                            <div class="icheck-primary d-inline mr-2">
+                                <input type="radio" id="sendUserRadio2" name="sendUserRadio" value="2">
+                                <label for="sendUserRadio2">
+                                    일반 유저
+                                </label>
+                            </div>
+                            <div class="icheck-primary d-inline mr-2">
+                                <input type="radio" id="sendUserRadio3" name="sendUserRadio" value="3">
+                                <label for="sendUserRadio3">
+                                    신규 유저
+                                </label>
+                            </div>
+                            <div class="icheck-primary d-inline mr-2">
+                                <input type="radio" id="sendUserRadio4" name="sendUserRadio" value="4">
+                                <label for="sendUserRadio4">
+                                    복귀할 유저
+                                </label>
+                            </div>
+                            <div class="icheck-primary d-inline mr-2">
+                                <input type="radio" id="sendUserRadio5" name="sendUserRadio" value="5" checked="">
+                                <label for="sendUserRadio5">
+                                    직접 입력
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>내용 (선택)</strong>
+            </td>
+            <td>
+                <div class="row">
+                    <div class="col-md-11">
+                        <input type="text" class="form-control" id="contentText" readonly="">
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-block btn-primary" id="contentTextButton">수정</button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 150px;">
+                <strong>아이템 지급</strong>
+            </td>
+            <td>
+                <div class="row">
+                    @for (var i = 0; i < itemSize; i++)
+                    {
+                    <div class="col-2 mb-2">
+                        <input type="checkbox" class="checkbox-style" id="itemCheckBox" />
+                        <input type="hidden" id="itemSelectHiddenValue" />
+                        <br />
+                        <button type="button" id="itemSelectButton" class="btn btn-primary btn-xs" onclick="onItemSelectedMessage(@(i))">아이템 선택</button>
+                    </div>
+                    }
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>수령기한</strong>
+                <br />
+                <strong>(UTC 기준)</strong>
+            </td>
+            <td>
+                <div class="row">
+                    <div class="col-md-3 col-sm-12">
+                        <div id="itemExpireTime" class="input-group" data-target-input="nearest">
+                            <input type="text" id="itemExpireTimeValue" class="form-control" data-target="#itemExpireTime" />
+                            <div class="input-group-append" data-target="#itemExpireTime" data-toggle="datetimepicker">
+                                <div class="input-group-text">
+                                    <i class="far fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        <tr>
+            <td>
+                <input type="checkbox" id="checkReservation" />
+                <strong>예약</strong>
+                <br />
+                <strong>(UTC 기준)</strong>
+            </td>
+            <td>
+                <div class="row">
+                    <div class="col-md-3 col-sm-12">
+                        <div id="reservationTime" class="input-group" data-target-input="nearest">
+                            <input type="text" id="reservationTimeValue" class="form-control" data-target="#reservationTime" />
+                            <div class="input-group-append" data-target="#reservationTime" data-toggle="datetimepicker">
+                                <div class="input-group-text">
+                                    <i class="far fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="row" style="flex-direction: row-reverse;">
+    <button type="button" class="btn btn-primary pl-5 pr-5" id="sendNotice">발송</button>
+    <div class="icheck-primary d-inline mr-4">
+        <input type="checkbox" id="isSendPushCheckbox">
+        <label for="isSendPushCheckbox">푸시와 함께 발송</label>
+    </div>
+</div>
+
+@section Styles
+{
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2/css/select2.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
+    <style>
+        table tr td {
+            vertical-align: middle !important;
+        }
+    </style>
+}
+
+@section Scripts
+{
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css"></script>
+    <script>
+        let itemCheckBoxs = []
+        $("input[id='itemCheckBox']").each(function () {
+            itemCheckBoxs.push($(this));
+        });
+
+        let itemSelectButtons = []
+        $("button[id='itemSelectButton']").each(function () {
+            itemSelectButtons.push($(this));
+        });
+
+        let itemSelectHiddenValues = []
+        $("input[id='itemSelectHiddenValue']").each(function () {
+            itemSelectHiddenValues.push($(this));
+        });
+
+        let inputTittleButton = $('#inputTitle');
+        let titleText = $('#title');
+        let inputContentButton = $('#inputContent');
+        let sendTargetButton = $('#sendTargetButton');
+        let sendTargetText = $('#sendTargetText');
+        let contentText = $('#contentText');
+        let contentTextButton = $('#contentTextButton');
+        let sendWithPush = $('#checkSendWithPush');
+        let sendNotice = $('#sendNotice');
+        let reserveTime = $('#reservationTimeValue');
+        let expireTime = $('#itemExpireTimeValue');
+        let loading = $('#loading');
+        let checkReservation = $('#checkReservation');
+
+        $(document).ready(function () {
+            $('#itemExpireTime').datetimepicker(dateTimePickerOption_UtcAddOneDay);
+            $('#reservationTime').datetimepicker(dateTimePickerOption_UtcAddOneDay);
+
+            initSendUserRadio();
+        });
+
+
+        function initSendUserRadio() {
+            $('input[name=sendUserRadio]').change(function () {
+                onSendUserRadioChanged();
+            });
+            onSendUserRadioChanged();
+        }
+
+        function onSendUserRadioChanged() {
+            var sendUserRadioValue = $('input[name=sendUserRadio]:checked').val();
+            if (sendUserRadioValue === '1') {
+                $('#sendTargetText').val('/AllUsers');
+                $('#sendTargetText').prop('disabled', true);
+                $('#sendTargetButton').prop('disabled', true);
+            } else if (sendUserRadioValue === '2') {
+                $('#sendTargetText').val('/NormalUsers');
+                $('#sendTargetText').prop('disabled', true);
+                $('#sendTargetButton').prop('disabled', true);
+            } else if (sendUserRadioValue === '3') {
+                $('#sendTargetText').val('/NewUsers');
+                $('#sendTargetText').prop('disabled', true);
+                $('#sendTargetButton').prop('disabled', true);
+            } else if (sendUserRadioValue === '4') {
+                $('#sendTargetText').val('/ToReturnUsers');
+                $('#sendTargetText').prop('disabled', true);
+                $('#sendTargetButton').prop('disabled', true);
+            } else {
+                $('#sendTargetText').val('');
+                $('#sendTargetText').prop('disabled', false);
+                $('#sendTargetButton').prop('disabled', false);
+            }
+        }
+
+        function onUserSelectClicked() {
+            openUserSelectPopup(
+                function (userSeq) {
+                    let sendUserRadioValue = $('input[name=sendUserRadio]:checked').val();
+                    if (sendUserRadioValue === '5') {
+                        let currentText = sendTargetText.val();
+                        if (currentText !== '') {
+                            currentText += `;${userSeq}`;
+                        } else {
+                            currentText = `${userSeq}`;
+                        }
+                        sendTargetText.val(currentText);
+                    }
+                });
+        }
+
+        function onItemSelectedMessage(index) {
+            openItemSelectPopup(index,
+                function (index, name, value) {
+                    itemCheckBoxs[index].prop('checked', true);
+                    itemSelectButtons[index].html(name);
+                    itemSelectHiddenValues[index].val(value);
+                    console.log(itemSelectHiddenValues[index].val());
+                });
+        }
+
+        inputTittleButton.click(function () {
+            openLanguageTextInputPopup(titleText,
+                function (text) {
+                    titleText.val(text);
+                }, 1);
+        });
+
+        contentText.click(function () {
+            openLanguageTextInputPopup(contentText,
+                function (text) {
+                    contentText.val(text);
+                }, 2);
+        });
+        contentTextButton.click(function () {
+            openLanguageTextInputPopup(contentText,
+                function (text) {
+                    contentText.val(text);
+                }, 2);
+        });
+
+        sendTargetButton.click(function () {
+            onUserSelectClicked();
+        });
+
+
+        sendNotice.click(function () {
+            startLoading();
+
+            let titleValue = titleText.val();
+            let sendTargetValue = sendTargetText.val();
+            let contentValue = contentText.val();
+
+            let items = [];
+            @for (var i = 0; i < itemSize; i++)
+             {
+                @: if (itemCheckBoxs[@(i)].is(':checked')) {
+                @: items.push(itemSelectHiddenValues[@(i)].val());
+                @: }
+             }
+
+            let itemExpireTimeValue = expireTime.val();
+            let reservationTimeValue = reserveTime.val();
+            let isSendPushValue = sendWithPush.is(':checked');
+            let isReserve = checkReservation.is(':checked');
+
+            $.ajax({
+                url: '/api/mail/send-mail',
+                type: 'POST',
+                data: {
+                    titleText: titleValue,
+                    sendTargetText: sendTargetValue,
+                    messageText: contentValue,
+                    itemText: items.join(';'),
+                    itemExpireTime: itemExpireTimeValue,
+                    reservationTime: reservationTimeValue,
+                    isSendPush: isSendPushValue,
+                    isReserve: isReserve,
+                },
+                success: function (response) {
+                    alert('성공');
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                },
+                complete: function (response) {
+                    endLoading();
+                }
+            });
+        });
+
+        function startLoading() {
+            loading.show();
+        }
+
+        function endLoading() {
+            loading.hide();
+        }
+    </script>
+}

@@ -1,0 +1,85 @@
+﻿@page
+@model WebTool.Pages.Indicator.Users.TotalUserModel
+@{
+    ViewData["Title"] = "전체";
+    ViewData["ActiveMenu"] = "/Indicator/Users/TotalUser";
+}
+
+<div class="row">
+    <div class="col-10 text-center">
+        <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
+    <div class="col-1" >
+        <button type="button" class="place-rightSide" style="margin-bottom: 10px; bottom: 50px;"><< 이전 30일</button>
+        <button type="button" class="place-rightSide" style="bottom: 0;">다음 30일 >></button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-6">
+        <table id="table-dancergrade" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+
+        </table>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .place-rightSide {
+            position: absolute;
+            right: 0;
+        }
+        .btn-space {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .paragraph {
+            margin-bottom: 30px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/chart.js/Chart.js"></script>
+    <script>
+        var ctx = document.getElementById('myChart');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5, 2, 3],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                },
+            }
+        });
+    </script>
+}

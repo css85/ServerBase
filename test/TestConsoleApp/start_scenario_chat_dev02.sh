@@ -1,0 +1,1 @@
+dotnet ./TestConsoleApp.dll chat --host "http://192.168.54.9:45000" --users 100 --startid 0 --createuser true --validcheck true --sendchatroommessagecount 10 --sendworldchatmessagecount 10 --createchatroomrandomvalue 10 --invitechatroomrandomvalue 10 --leavechatroomrandomvalue 10 --cycle-delay 1

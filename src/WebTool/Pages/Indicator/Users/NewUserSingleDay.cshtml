@@ -1,0 +1,77 @@
+﻿@page
+@model WebTool.Pages.Indicator.Users.NewUserSingleDayModel
+@{
+    ViewData["Title"] = "일별 신규 유입";
+    ViewData["ActiveMenu"] = "/Indicator/Users/NewUserSingleDay";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="row paragraph">
+    <div class="col-12 paragraph">
+        <button type="button" id="singleday" class="btn btn-secondary btn-space">일별</button>
+        <button type="button" id="singleweek" class="btn btn-secondary btn-space">주별</button>
+        <button type="button" id="singlemonth" class="btn btn-secondary btn-space">월별</button>
+    </div>
+    <div class="col-md-3 col-sm-12">
+        <div id="SearchDate" class="input-group" data-target-input="nearest">
+            <input type="text" id="SearchDateValue" class="form-control" data-target="#SearchDate" />
+            <div class="input-group-append" data-target="#SearchDate" data-toggle="datetimepicker">
+                <div class="input-group-text">
+                    <i class="far fa-calendar"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" id="search" class="btn btn-secondary btn-space">검색</button>
+    <button type="button" id="export" class="btn btn-secondary btn-space">엑셀</button>
+</div>
+
+<div class="row paragraph">
+    <label>신규 가입 유저수 :</label><label id="newbie-user-count" class="btn-space">0</label>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <table id="newbie-dataTable" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+            <thead>
+                <tr>
+                    @for (var i = 0; i < Model.columnHeader.Length; i++)
+                    {
+                        <th>@Model.columnHeader[i]</th>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .btn-space {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .paragraph {
+            margin-bottom: 30px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#SearchDate').datetimepicker(dateTimePickerOption_UtcNow_WithoutTime);
+        });
+    </script>
+} 

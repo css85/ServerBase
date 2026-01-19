@@ -1,0 +1,133 @@
+﻿@page
+@model WebTool.Pages.Indicator.RecordCostumeModel
+@{
+    ViewData["Title"] = "코스튬 현황";
+    ViewData["ActiveMenu"] = "/Indicator/Other/RecordCostume";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="row paragraph">
+    <div class="col-12">
+        <button type="button" id="boughtEachDay" class="btn btn-secondary btn-lg">날짜 별 구매</button>
+        <button type="button" id="hasItem" class="btn btn-secondary btn-lg">보유</button>
+    </div>
+</div>
+
+<div class="row" id="has-costume-content">
+    <div class="col-md-3 col-sm-12">
+        <div id="SearchDate" class="input-group" data-target-input="nearest">
+            <input type="text" id="SearchDateValue" class="form-control" data-target="#SearchDate" />
+            <div class="input-group-append" data-target="#SearchDate" data-toggle="datetimepicker">
+                <div class="input-group-text">
+                    <i class="far fa-calendar"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" id="search-hascostume" class="btn btn-secondary space">검색</button>
+    <button type="button" id="export-hascostume" class="btn btn-secondary space">엑셀</button>
+    <div class="col-12" style="margin-top: 30px;">
+        <table id="table-has-costume" class="table table-striped table-bordered table-hover dataTable dtr-inline text-center">
+            <thead>
+                <tr>
+                    @for (var i = 0; i < Model.buyHistoryColumn.Length; i++)
+                    {
+                        <th>@Model.buyHistoryColumn[i]</th>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="row paragraph" id="buy-each-singleday">
+    <div class="col-md-3 col-sm-12">
+        <div id="StartDate" class="input-group" data-target-input="nearest">
+            <input type="text" id="StartDateValue" class="form-control" data-target="#StartDate" />
+            <div class="input-group-append" data-target="#StartDate" data-toggle="datetimepicker">
+                <div class="input-group-text">
+                    <i class="far fa-calendar"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a><strong>~</strong></a>
+    <div class="col-md-3 col-sm-12">
+        <div id="EndDate" class="input-group" data-target-input="nearest">
+            <input type="text" id="EndDateValue" class="form-control" data-target="#EndDate" />
+            <div class="input-group-append" data-target="#EndDate" data-toggle="datetimepicker">
+                <div class="input-group-text">
+                    <i class="far fa-calendar"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" id="search_buyhistory" class="btn btn-secondary space">검색</button>
+    <button type="button" id="export_buyhistory" class="btn btn-secondary space">엑셀</button>
+    <div class="col-12" style="margin-top: 30px;">
+        <table id="table-costume-history" class="table table-striped table-bordered table-hover dataTable dtr-inline text-center">
+            <thead>
+                <tr>
+                    @for (var i = 0; i < Model.buyHistoryColumn.Length; i++)
+                    {
+                        <th>@Model.buyHistoryColumn[i]</th>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .space {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .paragraph {
+            margin-bottom: 30px;
+        }
+    </style>
+}
+
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css"></script>
+    <script>
+        let startDate = $('#StartDateValue');
+        let endDate = $('#EndDateValue');
+        let buyHistoryContent = $('#buy-each-singleday');
+        let hasCostumeContent = $('#has-costume-content');
+        let btnBuyHistory = $('#boughtEachDay');
+        let btnHasCostume = $('#hasItem');
+
+        btnBuyHistory.click(activeBuyHistory);
+        btnHasCostume.click(activeHasCostume);
+
+        $(document).ready(function () {
+            $('#StartDate').datetimepicker(dateTimePickerOption_UtcNow_WithoutTime);
+            $('#EndDate').datetimepicker(dateTimePickerOption_UtcNow_WithoutTime);
+            $('#SearchDate').datetimepicker(dateTimePickerOption_UtcNow_WithoutTime);
+
+            activeBuyHistory();
+        });
+
+        function activeBuyHistory() {
+            hasCostumeContent.hide();
+            buyHistoryContent.show();
+        }
+
+        function activeHasCostume() {
+            buyHistoryContent.hide();
+            hasCostumeContent.show();
+        }
+    </script>
+}

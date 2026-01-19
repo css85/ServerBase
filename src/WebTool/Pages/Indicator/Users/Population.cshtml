@@ -1,0 +1,70 @@
+﻿@page
+@model WebTool.Pages.Indicator.Users.PopulationModel
+@{
+    ViewData["Title"] = "인원/소비량 검색";
+    ViewData["ActiveMenu"] = "/Indicator/Users/Population";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="row paragraph">
+    <div class="col-12 paragraph">
+        <button type="button" id="dancerGrade" class="btn btn-secondary">댄서 등급 별</button>
+        <button type="button" id="shoppingGrade" class="btn btn-secondary">쇼핑몰 등급 별</button>
+    </div>
+    <div class="col-md-3 col-sm-12">
+        <div id="SearchDate" class="input-group" data-target-input="nearest">
+            <input type="text" id="SearchDateValue" class="form-control" data-target="#SearchDate" />
+            <div class="input-group-append" data-target="#SearchDate" data-toggle="datetimepicker">
+                <div class="input-group-text">
+                    <i class="far fa-calendar"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" id="search" class="btn btn-secondary">검색</button>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <table id="table-population" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+            <thead>
+                <tr>
+                    @for (var i = 0; i < Model.columnHeader.Length; i++)
+                    {
+                        <th>@Model.columnHeader[i]</th>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .space {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .paragraph {
+            margin-bottom: 30px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css"></script>
+    <script>
+
+        $(document).ready(function () {
+            $('#SearchDate').datetimepicker(dateTimePickerOption_UtcNow_WithoutTime);
+        });
+    </script>
+}

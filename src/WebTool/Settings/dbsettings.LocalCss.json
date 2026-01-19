@@ -1,0 +1,25 @@
+{
+  "DatabaseSettings": {
+    "DatabaseProviderType": "MySQL",
+    "GateConnectionStrings": [
+      "Server=localhost;Port=3306;Database=gate;User=12moments;Password=Xmdnpfqmahajscm12;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "UserConnectionStrings": [
+      "Server=localhost;Port=3306;Database=eve;User=12moments;Password=Xmdnpfqmahajscm12;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "StoreEventConnectionStrings": [
+      "Server=localhost;Port=3306;Database=eve_store_event;User=12moments;Password=Xmdnpfqmahajscm12;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "WebToolConnectionString": "Server=localhost;Port=3306;Database=tool;User=12moments;Password=Xmdnpfqmahajscm12;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;",
+    "EnableQueryLogging": true
+  },
+  "RedisConfiguration": {
+    "Hosts": [
+      {
+        "Host": "localhost",
+        "Port": "6400"
+      }
+    ],
+    "Password": "Xmdnpfqmahajscm12"
+  }
+}

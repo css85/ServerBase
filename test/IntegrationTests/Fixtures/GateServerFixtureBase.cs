@@ -1,0 +1,109 @@
+﻿using System;
+using Microsoft.AspNetCore.Mvc.Testing;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Common.Config;
+using FrontEndWeb.Services;
+using GateServer.Connection.Services;
+using Integration.Tests.Client;
+using Integration.Tests.Services;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Shared;
+using Shared.ServerApp.Config;
+using Shared.ServerApp.Services;
+using Shared.Session.Services;
+using Xunit.DependencyInjection;
+using Xunit.DependencyInjection.Logging;
+
+namespace Integration.Tests.Fixtures
+{
+    public abstract class GateServerFixtureBase : WebApplicationFactory<GateServer.Startup>
+    {
+        private readonly ILogger<GateServerFixtureBase> _logger;
+        private readonly ITestOutputHelperAccessor _testOutputHelper;
+        private readonly TestServerSessionService _testServerSessionService;
+
+        public IServiceProvider ServiceProvider { get; private set; }
+
+        public CsvStoreContext CsvContext { get; private set; }
+        public ChangeableSettings<GameRuleSettings> GameRule { get; private set; }
+        public ChangeableSettings<TokenSettings> TokenSettings { get; private set; }
+        public ServerSessionService ServerSessionService { get; private set; }
+
+        public readonly int AppId;
+
+        protected GateServerFixtureBase(
+            ILogger<GateServerFixtureBase> logger,
+            ITestOutputHelperAccessor testOutputHelper,
+            TestServerSessionService testServerSessionService,
+            int appId)
+        {
+            _logger = logger;
+            _testOutputHelper = testOutputHelper;
+            _testServerSessionService = testServerSessionService;
+
+            AppId = appId;
+        }
+
+        protected override IHostBuilder CreateHostBuilder()
+        {
+            var builder = base.CreateHostBuilder();
+            builder
+                .UseEnvironment("UnitTest")
+                .ConfigureAppConfiguration((host, config) =>
+                {
+                    config.SetBasePath(host.HostingEnvironment.ContentRootPath);
+                    config.AddJsonFile("appsettings.json")
+                        .AddJsonFile("appsettings.UnitTest.json")
+                        .AddJsonFile("Settings/dbsettings.json", optional: true, reloadOnChange: true)
+                        .AddJsonFile($"Settings/dbsettings.UnitTest.json", optional: true, reloadOnChange: true)
+                        .AddInMemoryCollection(new Dictionary<string, string>
+                        {
+                            ["AppId"] = AppId.ToString(),
+                        });
+                })
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddProvider(new XunitTestOutputLoggerProvider(_testOutputHelper));
+                })
+                .ConfigureServices((_, services) =>
+                {
+                    services.AddSingleton<ServerSessionListenerService<ServerSessionService>>();
+                });
+
+            return builder;
+        }
+
+        protected override IHost CreateHost(IHostBuilder builder)
+        {
+            var host = base.CreateHost(builder);
+
+            ServiceProvider = host.Services;
+
+            host.Services.GetRequiredService<ServerSessionListenerService<ServerSessionService>>();
+
+            var serverSessionService = host.Services.GetRequiredService<ServerSessionService>();
+            _testServerSessionService.RegisterServerSessionService(serverSessionService);
+            ServerSessionService = serverSessionService;
+
+            CsvContext = host.Services.GetRequiredService<CsvStoreContext>();
+            GameRule = host.Services.GetRequiredService<ChangeableSettings<GameRuleSettings>>();
+            TokenSettings = host.Services.GetRequiredService<ChangeableSettings<TokenSettings>>();
+
+            return host;
+        }
+
+        public async Task<ITestClient> GetTestHttpClientAsync()
+        {
+            var testHttpClient = new TestGateHttpClient(CreateClient(),new []{NetServiceType.Gate});
+            await testHttpClient.InitSession();
+
+            return testHttpClient;
+        }
+
+    }
+}

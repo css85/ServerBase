@@ -1,0 +1,387 @@
+﻿@page
+@using WebTool.Base.UserInfoDetail
+@model WebTool.Pages.User.UserInfoDetailModel
+@{
+    ViewData["Title"] = "유저 통합 정보";
+    ViewData["ActiveMenu"] = "/User/UserInfoDetail";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card card-primary card-outline player-info-card">
+            <div class="card-header">
+                <h3 class="card-title">유저정보</h3>
+            </div>
+            <div class="card-body">
+                @for (var i = 0; i < Model.InfoItems.Length; ++i)
+                {
+                    var item = Model.InfoItems[i];
+                    if (i == 0)
+                    {
+                        @:<div class="row">
+                        }
+                        else if (item.IsSeparate)
+                        {
+                        @:</div>
+                        @:<div class="row">
+                        }
+
+                        <div class="col-lg-2 col-md-2 col-sm-6">
+                            <div class="card player-info-item">
+                                <div class="card-header">
+                                    <h2 class="card-title">@item.LocaleName</h2>
+                                    @if (item.IsCopyable())
+                                    {
+                                        <button type="button" class="btn btn-secondary btn-xs float-right button-xs" onclick="copyValue('@item.Id')">복사</button>
+                                    }
+                                    @if (item.IsReadonly() == false)
+                                    {
+                                        <button type="button" class="btn btn-danger btn-xs float-right button-xs" onclick="showEditModal('@item.Id', '@item.Value')">수정</button>
+                                    }                                    
+                                </div>
+                                <div class="card-body">
+                                    @if (item.EditInfo != null)
+                                    {
+                                        <input type="hidden" id="player-info-edit-value2-@item.Id" value="@item.Value2" />
+                                        <input type="hidden" id="player-info-edit-type-@item.Id" value="@item.EditInfo.Type.ToString()" />
+                                        <input type="hidden" id="player-info-edit-class-@item.Id" value="@item.EditInfo.ClassName" />
+                                        <input type="hidden" id="player-info-edit-property-@item.Id" value="@item.EditInfo.PropertyName" />
+                                    }
+                                    @switch (item.Type)
+                                    {
+                                        case PlayerDetailInfoItemType.DateTime:
+                                            <div id="player-info-datetime-@item.Id" class="input-group" data-target-input="nearest">
+                                                <input type="text" id="player-info-value-@item.Id" class="form-control" data-target="#player-info-datetime-@item.Id" readonly="" />
+                                                <div class="input-group-append" data-target="#player-info-datetime-@item.Id" data-toggle="datetimepicker">
+                                                    <div class="input-group-text">
+                                                        <i class="far fa-calendar"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            break;
+                                        case PlayerDetailInfoItemType.Parts:
+                                            <button type="button" class="btn btn-primary" onclick="openPopup('/Ext/DetailCostumeInfo?userSeq=', '@Model.Info.UserSeq', 1000, 600)">보기</button>
+                                            break;
+                                        case PlayerDetailInfoItemType.Profile:
+                                            <button type="button" class="btn btn-primary" onclick="openPopup('/Ext/DetailCustomPartsPopup?userSeq=', '@Model.Info.UserSeq', 700, 450)">보기</button>
+                                            break;
+                                        case PlayerDetailInfoItemType.MyItem:
+                                            <button type="button" class="btn btn-primary" onclick="openPopup('/Ext/DetailMyItem?userSeq=', '@Model.Info.UserSeq', 700, 450)">보기</button>
+                                            break;
+                                        case PlayerDetailInfoItemType.BuyHistory:
+                                            <button type="button" class="btn btn-primary">보기</button>
+                                            break;
+                                        case PlayerDetailInfoItemType.PurchaseHistory:
+                                            <button type="button" class="btn btn-primary">보기</button>
+                                            break;
+                                        
+                                        default:
+                                            <input id="player-info-value-@item.Id" type="text" class="form-control" value="@item.Value" readonly="">
+                                            break;
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        if (i == Model.InfoItems.Length - 1)
+                        {
+                        @:</div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card card-primary card-outline card-outline-tabs player-tabs">
+            <div class="card-header p-0 border-bottom-0">
+                <ul class="nav nav-tabs" id="tabs" role="tablist">
+                    @foreach (var tabItem in Model.TabItems)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link @(tabItem.IsActive ? "active" : "")" id="tab-button-@tabItem.Id" data-id="@tabItem.Id" data-toggle="tab" href="#tab-@tabItem.Id" role="tab" aria-controls="tab-@tabItem.Id" aria-selected="@(tabItem.IsActive ? "true" : "false")">@tabItem.LocaleName</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+                    @foreach (var tabItem in Model.TabItems)
+                    {
+                        <div class="tab-pane fade @(tabItem.IsActive ? "active show" : "")" id="tab-@tabItem.Id" role="tabpanel" aria-labelledby="tab-button-@tabItem.Id">
+                            <table id="@Model.Info.UserSeq-@tabItem.Id-table" class="table table-bordered table-striped table-hover dataTable dtr-inline" style="display: none">
+                                <thead>
+                                    <tr>
+                                        @foreach (var column in tabItem.Columns)
+                                        {
+                                            <th>
+                                                @column
+                                            </th>
+                                        }
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" aria-modal="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="edit-modal-title" class="modal-title">Default Modal</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label>이전값</label>
+                            <input id="edit-modal-prev-value" type="text" class="form-control" readonly="">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label>바꿀값</label>
+                            <input id="edit-modal-value" type="text" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <input type="hidden" id="edit-modal-data-target"/>
+                <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-danger" onclick="editValue()">수정</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="loading" style="display: none;">
+    <div class="overlay modal d-flex justify-content-center align-items-center" style="background: #00000055;">
+        <i class="fas fa-2x fa-sync fa-spin"></i>
+    </div>
+</div>
+
+<div>
+    <input type="hidden" id="user-sequence" value="@Model.Info.UserSeq" />
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
+    <style>
+        .player-info-card .card-body {
+            margin: 0;
+            padding: 0.625rem;
+        }
+
+        .player-info-item .card-header { padding: 0.625rem; }
+
+        .player-info-item .card-header .card-title {
+            display: contents;
+            margin-bottom: -0.375rem;
+        }
+
+        .player-info-item .card-header .button-xs {
+            margin-left: 0.375rem;
+            width: 3.0rem;
+        }
+
+        .player-info-item .card-header .button-sm {
+            margin-left: 0.1rem;
+            width: 3.5rem;
+            height: 1.5rem;
+            font-size: .70rem;
+        }
+
+        .player-info-item .card-body { padding: 0.375rem; }
+
+        .player-info-item .card-body button {
+            width : 100%;
+        }
+
+        .player-tabs {
+            padding: 0.375rem;
+            min-height: 802px;
+        }
+
+        div.dataTables_wrapper div.dataTables_filter input { width: 20rem; }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script>
+        var tabTableMap = [];
+        var tabTableFunctionMap = [];
+        let userSeqHiddenValue = $('#user-sequence');
+
+        $('a[data-toggle="tab"]').on('shown.bs.tab',
+            function (e) {
+                var id = $(e.target).data('id');
+                loadTabTable(id);
+                saveTabPosition(id);
+            });
+
+        $(document).ready(function() {
+            @foreach (var tabItem in Model.TabItems)
+            {
+                @:registerTable@(tabItem.Id)();
+            }
+
+            var lastTabId = localStorage.getItem('@Model.Info.UserSeq' + 'playerDetailLastTabId');            
+            if (lastTabId !== null && lastTabId !== undefined) {
+                $('[href="#tab-' + lastTabId + '"]').tab('show');
+                loadTabTable(lastTabId);
+            } else {
+                @foreach (var tabItem in Model.TabItems)
+                {
+                    if (tabItem.IsActive)
+                    {
+                        @:loadTabTable('@tabItem.Id');
+                        break;
+                    }
+                }
+            }
+
+            @foreach (var item in Model.InfoItems)
+            {
+                if (item.Type == PlayerDetailInfoItemType.DateTime)
+                {
+                    @:$('#player-info-datetime-@item.Id').datetimepicker({
+                    @:    locale: 'ko',
+                    @:    icons: {
+                    @:        time: 'far fa-clock',
+                    @:        date: 'far fa-calendar-alt',
+                    @:        today: 'far fa-calendar-check'
+                    @:    },
+                    @:    format: 'YYYY-MM-DD HH:mm:ss',
+                    @:    date: '@item.Value'
+                    @:});
+                }
+            }
+
+        });
+
+        function getTabTableMap(name) {
+            return tabTableMap[name];
+        }
+
+        function setTabTableMap(name, table) {
+            tabTableMap[name] = table;
+        }
+
+        function getTabTableFunctionMap(name) {
+            return tabTableFunctionMap[name];
+        }
+
+        function setTabTableFunctionMap(name, func) {
+            tabTableFunctionMap[name] = func;
+        }
+
+        function loadTabTable(name) {
+            getTabTableFunctionMap(name)();
+        }
+
+        function saveTabPosition(id) {
+            localStorage.setItem('@Model.Info.UserSeq' + 'playerDetailLastTabId', id);            
+        }
+
+        function copyValue(id) {
+            var copyText = document.getElementById('player-info-value-' + id);
+
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+            document.execCommand('copy');
+
+            alert('복사되었습니다. (' + copyText.value + ')');
+        }
+
+        function startLoading() {
+            $('#loading').show();
+        }
+
+        function endLoading() {
+            $('#loading').hide();
+        }
+
+        function showEditModal(id, prevValue) {
+            var value = $('#player-info-value-' + id).val();
+            $('#edit-modal-data-target').val(id);
+            $('#edit-modal-prev-value').val(prevValue);
+            $('#edit-modal-value').val(value);
+            $('#edit-modal-title').val(value);
+            $('#editModal').modal('show');
+        }
+
+
+        function openPopup(path, params, width, height) {
+            window.open(path + params, "PopupWindow", `width=${width}px, height=${height}px, top=150,left=250`);
+        }
+
+        function openPopupMultiple(width, height, path, ...params) {
+            let fullPath = path;
+
+            for (var i = 0; i < params.length; i++) {
+                fullPath += params[i];
+            }
+
+            window.open(fullPath, "PopupWindow", `width=${width}px, height=${height}px, top=150,left=250`);
+        }
+
+
+        function editValue() {
+            startLoading();
+
+            var id = $('#edit-modal-data-target').val();
+            var editType = $('#player-info-edit-type-' + id).val();
+            var className = $('#player-info-edit-class-' + id).val();
+            var propertyName = $('#player-info-edit-property-' + id).val();
+            var value = $('#edit-modal-value').val();
+            let userSeq = userSeqHiddenValue.val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/user/edit-value',
+                data: {
+                    userSeq: userSeq,
+                    editType: editType,
+                    className: className,
+                    propertyName: propertyName,
+                    value: value
+                },
+                success: function (response) {
+                    alert('성공');
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert('실패\n' + xhr.status + '\n' + status + '\n' + error);
+                },
+                complete: function (response) {
+                    $('#editModal').modal('hide');
+                    endLoading();
+                }
+            });
+        }
+    </script>
+
+    <partial name="UserInfoDetailPartials/DetailFriends"/>
+    <partial name="UserInfoDetailPartials/DetailFriendRequests"/>
+    <partial name="UserInfoDetailPartials/DetailFriendResponse"/>
+}

@@ -1,0 +1,234 @@
+﻿@page
+@using WebTool.Controllers;
+@model WebTool.Pages.Server.Maintenance.Version.GateModel
+@{
+    ViewData["Title"] = "게이트 관리";
+    ViewData["ActiveMenu"] = "/Server/Maintenance/Version/Gate";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="row paragraph-lg">
+    <div class="col-12">
+        <strong>점검 시작 시간</strong>
+    </div>
+    <div class="col-12 paragraph-sm">
+        <div class="col-md-3 col-sm-12">
+            <div id="StartDate" class="input-group padding-left" data-target-input="nearest">
+                <input type="text" id="StartdateValue" class="form-control" data-target="#StartDate" />
+                <div class="input-group-append" data-target="#StartDate" data-toggle="datetimepicker">
+                    <div class="input-group-text">
+                        <i class="far fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 paragraph-sm">
+        <strong>점검 종료 시간</strong>
+    </div>
+    <div class="col-12 paragraph-sm">
+        <div class="col-md-3 col-sm-12">
+            <div id="EndDate" class="input-group padding-left" data-target-input="nearest">
+                <input type="text" id="EnddateValue" class="form-control" data-target="#EndDate" />
+                <div class="input-group-append" data-target="#EndDate" data-toggle="datetimepicker">
+                    <div class="input-group-text">
+                        <i class="far fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-10">
+        <button type="button" class="btn btn-primary" id="set-maintenance" style="margin-left: 30%;"><strong>시간 설정</strong></button>
+        <button type="button" class="btn pl-5 pr-5 btn-primary float-right " id="open-gate"><strong>게이트 오픈</strong></button>
+        <button type="button" class="btn btn-warning pl-5 pr-5 float-right space" id="close-gate"><strong>게이트 차단</strong></button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <hr />
+    </div>
+</div>
+
+<div class="row paragraph-sm">
+    <strong>설정된 점검 시간</strong>
+    <div class="col-12 paragraph-sm">
+        <table id="maintenance-time" class="table table-bordered table-hover dataTable dtr-inline text-center">
+            <thead>
+                <tr>
+                    @foreach (var column in ServerController.MaintenanceTimeTable)
+                    {
+                        <th>
+                            @column.Name
+                        </th>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div id="loading" style="display: none;">
+    <div class="overlay modal d-flex justify-content-center align-items-center" style="background: #00000055;">
+        <i class="fas fa-2x fa-sync fa-spin"></i>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .paragraph-lg {
+            margin-top: 50px;
+        }
+
+        .paragraph-sm {
+            margin-top: 20px;
+        }
+
+        .paragraph-xsm {
+            margin-top: 10px;
+        }
+
+        .padding-left {
+            padding-left: 50px;
+        }
+
+        strong {
+            font-size: 20px;
+        }
+
+        .space {
+            margin-right: 20px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script>
+        let startTime = $('#StartDate');
+        let endTime = $('#EndDate');
+        let setTimeBtn = $('#set-maintenance');
+        let selectGateId = $('#select_gateId');
+        let loading = $('#loading');
+        let gateOpenBtn = $('#open-gate');
+        let gateCloseBtn = $('#close-gate');
+
+        $(document).ready(function () {
+            startTime.datetimepicker(dateTimePickerOption_UtcNow);
+            endTime.datetimepicker(dateTimePickerOption_UtcNow);
+
+            showTimeTable();
+        });
+
+        gateOpenBtn.click(function () {
+            sendMessage('Gate', 'up-gate', 'up-gate');
+        });
+
+        gateCloseBtn.click(function () {
+            sendMessage('Gate', 'close-gate', 'close-gate');
+        });
+
+        function sendMessage(netServiceType, commandName, messageText) {
+            startLoading();
+            $.ajax({
+                type: 'POST',
+                url: '/api/operation/internal-command/send',
+                data: {
+                    serviceType: netServiceType,
+                    commandName: commandName,
+                    messageText: messageText,
+                },
+                success: function (response) {
+                    if (response.ret_code != 0)
+                        alert('서버에러[' + response.ret_code + ']');
+                    else
+                        alert('성공');
+
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert('실패\n' + xhr.responseText);
+                },
+                complete: function (response) {
+                    $('#editModal').modal('hide');
+                    endLoading();
+                }
+            });
+        }
+
+        function showTimeTable() {
+            $('#maintenance-time').DataTable({
+                autoWidth: true,
+                lengthChange: false,
+                paging: false,
+                info: false,
+                searching: false,
+                stateSave: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/api/server/get-maintenance-timetable',
+                    type: 'POST',
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                },
+                columnDefs: [
+                    {
+                        targets: [2],
+                        orderable: false,
+                    },
+                ],
+                createdRow: function (row, data, dataIndex, cells) {
+                }
+            });
+        }
+
+        setTimeBtn.click(function () {
+            let start = $('#StartdateValue').val();
+            let end = $('#EnddateValue').val();
+            let gateId = selectGateId.val();
+
+            console.log(start);
+            console.log(end);
+            console.log(gateId);
+
+            startLoading();
+            $.ajax({
+                url: '/api/server/set-maintenance-time',
+                type: 'POST',
+                data: {
+                    StartTime: start,
+                    EndTime: end,
+                    GateID: gateId,
+                },
+                success: function (res) {
+                    alert('성공');
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                },
+                complete: function (res) {
+                    endLoading();
+                    location.reload();
+                }
+            });
+        });
+
+        function startLoading() {
+            loading.show();
+        }
+
+        function endLoading() {
+            loading.hide();
+        }
+    </script>
+}

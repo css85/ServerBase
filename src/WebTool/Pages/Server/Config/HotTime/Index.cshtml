@@ -1,0 +1,235 @@
+﻿@page
+@using WebTool.Controllers;
+@{
+    ViewData["Title"] = "핫타임";
+    ViewData["ActiveMenu"] = "/Server/Config/HotTime/Index";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-5">
+        <table class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+            <thead>
+                <tr>
+                    <th>핫타임</th>
+                    <th>시간</th>
+                </tr>
+                <tr>
+                    <td>시작 (UTC 기준)</td>
+                    <td colspan="5" class="text-center">
+                        <div class="row" style="padding-left:25%; width: 80%;">
+                            <div id="StartTime" class="input-group" data-target-input="nearest">
+                                <input type="text" id="StartTimeValue" class="form-control" data-target="#StartTime" />
+                                <div class="input-group-append" data-target="#StartTime" data-toggle="datetimepicker">
+                                    <div class="input-group-text">
+                                        <i class="far fa-calendar"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>종료 (UTC 기준)</td>
+                    <td colspan="5" class="text-center">
+                        <div class="row" style="padding-left:25%; width: 80%;">
+                            <div id="EndTime" class="input-group" data-target-input="nearest">
+                                <input type="text" id="EndTimeValue" class="form-control" data-target="#EndTime" />
+                                <div class="input-group-append" data-target="#EndTime" data-toggle="datetimepicker">
+                                    <div class="input-group-text">
+                                        <i class="far fa-calendar"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="col-5" style="margin-left:30px;">
+        <table id="hottime_buff_table" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+            <thead>
+                <tr>
+                    @foreach (var column in ServerController.HotTimeBuffInfos)
+                    {
+                        <th> @column.Name </th>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <div class="col-12" style="margin-top: 20px;">
+        <button id="regist-hottimebuff" class="btn btn-lg btn-primary float-right">핫 타임 예약</button>
+    </div>
+
+    <div class="col-12" style="margin-top: 50px;">
+        <strong>현재 적용된 핫타임 버프 목록</strong>
+        <table id="regist_hottime_table" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center" style="margin-top: 20px;">
+            <thead>
+                <tr>
+                    @foreach (var column in ServerController.RegistHotTimeBuffInfos)
+                    {
+                        <th> @column.Name </th>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div id="loading" style="display: none;">
+    <div class="overlay modal d-flex justify-content-center align-items-center" style="background: #00000055;">
+        <i class="fas fa-2x fa-sync fa-spin"></i>
+    </div>
+</div>
+
+@section Styles
+{
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2/css/select2.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
+    <style>
+        table tr td {
+            vertical-align: middle !important;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script>
+        let hottimeBuffTable = $('#hottime_buff_table');
+        let currentHotTimeTable = $('#regist_hottime_table');
+        let registBuffButton = $('#regist-hottimebuff');
+        let startTime = $('#StartTime');
+        let expireTime = $('#EndTime');
+        let loading = $('#loading');
+        let currentHotTimeContent = null;
+
+        registBuffButton.click(function () {
+            let buffId = $('input[name=buff-group]:checked').val();
+            let buffStartDate = $("#StartTimeValue").val();
+            let buffEndDate = $("#EndTimeValue").val();
+
+            $.ajax({
+                url: '/api/server/regist-hottime',
+                type: 'POST',
+                data: {
+                    BuffID: buffId,
+                    StartDate: buffStartDate,
+                    EndDate: buffEndDate,
+                },
+                success: function (response) {
+                    alert('성공');
+                    showCurrentHotTimeTable();
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                },
+                complete: function (response) {
+                    endLoading();
+                }
+            });
+        });
+
+        function showCurrentHotTimeTable() {
+            if (currentHotTimeContent !== null) {
+                currentHotTimeTable.DataTable().clear().destroy();
+            }
+
+            currentHotTimeContent = currentHotTimeTable.DataTable({
+                language: datatablesLangKor(),
+                autoWidth: false,
+                stateSave: true,
+                lengthChange: false,
+                searching: false,
+                info: false,
+                ordering: false,
+                processing: false,
+                serverSide: true,
+                paging: false,
+                ajax: {
+                    url: '/api/server/get-currinfo',
+                    type: 'POST',
+                    data: {
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                },
+                columnDefs: [
+                    {
+                        targets: 4,
+                        orderable: false,
+                    }
+                ],
+                createdRow: function (row, data, dataIndex, cells) {
+                }
+            })
+        }
+
+        function showHotTimeBuffTable() {
+            hottimeBuffTable.DataTable({
+                language: datatablesLangKor('버프 타입', '버프 %'),
+                autoWidth: false,
+                stateSave: true,
+                lengthChange: false,
+                searching: false,
+                info: false,
+                ordering: false,
+                processing: false,
+                serverSide: true,
+                paging: false,
+                ajax: {
+                    url: '/api/server/get-buffinfo',
+                    type: 'POST',
+                    data: {
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                },
+                columnDefs: [
+                    {
+                        targets: 1,
+                        orderable: false,
+                    }
+                ],
+                createdRow: function (row, data, dataIndex, cells) {
+                    if (dataIndex === 0) {
+                        $(cells[1]).html(`<input type="radio" name="buff-group" value=${dataIndex + 1} checked>`);
+                    } else {
+                        $(cells[1]).html(`<input type="radio" name="buff-group" value=${dataIndex + 1}>`);
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            startTime.datetimepicker(dateTimePickerOption_UtcAddOneDay);
+            expireTime.datetimepicker(dateTimePickerOption_UtcAddOneDay);
+            showHotTimeBuffTable();
+            showCurrentHotTimeTable();
+        });
+
+        function startLoading() {
+            loading.show();
+        }
+
+        function endLoading() {
+            loading.hide();
+        }
+    </script>
+}

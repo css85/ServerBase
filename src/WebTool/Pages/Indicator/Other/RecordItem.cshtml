@@ -1,0 +1,195 @@
+﻿@page
+@model WebTool.Pages.Indicator.RecordItemModel
+@{
+    ViewData["Title"] = "아이템 현황";
+    ViewData["ActiveMenu"] = "/Indicator/Other/RecordItem";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="row paragraph">
+    <div class="col-12 paragraph">
+        <button type="button" id="buyhistory" class="btn btn-secondary btn-lg space">구매</button>
+        <button type="button" id="usehistory" class="btn btn-secondary btn-lg space">사용</button>
+    </div>
+    <div class="col-md-3 col-sm-12">
+        <div id="StartDate" class="input-group" data-target-input="nearest">
+            <input type="text" id="StartDateValue" class="form-control" data-target="#StartDate" />
+            <div class="input-group-append" data-target="#StartDate" data-toggle="datetimepicker">
+                <div class="input-group-text">
+                    <i class="far fa-calendar"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a><strong>~</strong></a>
+    <div class="col-md-3 col-sm-12">
+        <div id="EndDate" class="input-group" data-target-input="nearest">
+            <input type="text" id="EndDateValue" class="form-control" data-target="#EndDate" />
+            <div class="input-group-append" data-target="#EndDate" data-toggle="datetimepicker">
+                <div class="input-group-text">
+                    <i class="far fa-calendar"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" id="search" class="btn btn-secondary space">검색</button>
+    <button type="button" id="export" class="btn btn-secondary space">엑셀</button>
+</div>
+
+<div class="row">
+    <div class="col-12" id="buyhistory-content">
+        <table id="table-buyhistory" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+            <thead>
+                <tr>
+                    @for (var i = 0; i < Model.buyTableTd.Length; i++)
+                    {
+                        <td>@Model.buyTableTd[i]</td>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="col-12" id="usehistory-content">
+        <table id="table-buyhistory" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+            <thead>
+                <tr>
+                    @for (var i = 0; i < Model.useTableTd.Length; i++)
+                    {
+                        <td>@Model.useTableTd[i]</td>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div id="loading" style="display: none;">
+    <div class="overlay modal d-flex justify-content-center align-items-center" style="background: #00000055;">
+        <i class="fas fa-2x fa-sync fa-spin"></i>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .space {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .paragraph {
+            margin-bottom: 30px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script>
+        let startDate = $('#StartDateValue');
+        let endDate = $('#EndDateValue');
+        let buyHistoryContentRoot = $('#buyhistory-content');
+        let useHistoryContentRoot = $('#usehistory-content');
+        let buyHistoryTableContentRoot = $('#table-buyhistory');
+        let useHistoryTableContentRoot = $('#table-usehistory');
+        let buyHistoryContent = null;
+        let useHistoryContent = null;
+        let btnBuyHistory = $('#buyhistory');
+        let btnUseHistory = $('#usehistory');
+        let searchBtn = $('#search');
+        let loadingModal = $('#loading');
+
+        btnBuyHistory.click(activeBuyHistory);
+        btnUseHistory.click(activeUseHistory);
+
+        $(document).ready(function () {
+            $('#StartDate').datetimepicker(dateTimePickerOption_UtcNow_WithoutTime);
+            $('#EndDate').datetimepicker(dateTimePickerOption_UtcNow_WithoutTime);
+            $('#SearchDate').datetimepicker(dateTimePickerOption_UtcNow_WithoutTime);
+
+            activeBuyHistory();
+        });
+
+        function activeBuyHistory() {
+            useHistoryContentRoot.hide();
+            buyHistoryContentRoot.show();
+        }
+
+        function activeUseHistory() {
+            buyHistoryContentRoot.hide();
+            useHistoryContentRoot.show();
+        }
+
+        searchBtn.click(function () {
+            //아이템 구매 로그
+            if (buyHistoryContentRoot.is(':visible')) {
+                showBuyItemDataTable();
+            } else {
+                //아이템 사용 로그
+                showUseItemDataTable();
+            }
+        });
+
+        function showBuyItemDataTable() {
+            let fromDt = startDate.val();
+            let toDt = endDate.val();
+
+            console.log(fromDt);
+            console.log(toDt);
+            startLoading();
+
+            if (buyHistoryContent !== null) {
+                buyHistoryTableContentRoot.DataTable().clear().destroy();
+            }
+
+            buyHistoryContent = buyHistoryTableContentRoot.DataTable({
+                autoWidth: false,
+                lengthChange: false,
+                paging: true,
+                searching: false,
+                info: false,
+                stateSave: true,
+                serverSide: true,
+                ajax: {
+                    url: '/api/indicator/purchase-item-log',
+                    type: 'POST',
+                    data: {
+                        FromDt: fromDt,
+                        ToDt: toDt,
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    },
+                    complete: function (res) {
+                        endLoading();
+                    }
+                },
+                createdRow: function (row, data, dataIndex, cells) {
+                },
+                columnDefs: [
+                    {
+                        targets: 1,
+                        orderable: false,
+                    }
+                ],
+            });
+        }
+
+        function showUseItemDataTable() {
+        }
+
+        function startLoading() {
+            loadingModal.show();
+        }
+        function endLoading() {
+            loadingModal.hide();
+        }
+    </script>
+}

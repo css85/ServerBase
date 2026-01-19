@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <LangVersion>default</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Destructurama.Attributed" Version="3.0.0" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.0" />
+    <PackageReference Include="MySqlConnector.Logging.Serilog" Version="2.0.0" />
+    <PackageReference Include="NEST" Version="7.16.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Nito.AsyncEx" Version="5.1.2" />
+    <PackageReference Include="Polly" Version="7.2.2" />
+    <PackageReference Include="RedLock.net" Version="2.3.1" />
+    <PackageReference Include="SerilogTraceListener" Version="3.2.0" />    
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared.Repository\Shared.Repository.csproj" />
+    <ProjectReference Include="..\..\Shared.Session\Shared.Session.csproj" />
+  </ItemGroup>
+ 
+</Project>

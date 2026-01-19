@@ -1,0 +1,121 @@
+﻿@page
+@using WebTool.Controllers;
+@model WebTool.Pages.Ext.DetailCustomPartsPopupModel
+@{
+    Layout = "_LayoutContentsOnly";
+}
+
+<div id="totalparts">
+    <div class="row">
+        <div class="col-12">
+            @*<button type="button" class="btn-dark">@Html.ActionLink("엑셀", "ExportTotalPartsData", "UserController", new { userSeq = Model.UserSeq})</button>*@
+            <table id="totalparts-table" class="table table-bordered table-striped table-hover dataTable dtr-inline">
+                <thead>
+                    <tr>
+                        @foreach (var column in UserController.CustomPartsInfo)
+                        {
+                            <th>
+                                @column.Name
+                            </th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div>
+    <input type="hidden" id="save-user-id" value="@Model.UserSeq" />
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
+    <style>
+        .content-button {
+            margin: 0.5rem;
+        }
+
+        .player-info-card .card-body {
+            margin: 0;
+            padding: 0.625rem;
+        }
+
+        .player-tabs {
+            padding: 0.375rem;
+            min-height: 802px;
+        }
+
+        th {
+            table-layout: fixed;
+        }
+    </style>
+}
+
+@section Scripts
+    {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script>
+        //let currentParts = $('#tab-currentparts-table');
+        let totalParts = $('#totalparts');
+        
+        let totalPartsTable = null;
+        let userID = $('#save-user-id');
+
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            $this = $(e.target);
+
+            var type = $this.data("load");
+
+            showTable();
+        });
+
+        $(document).ready(function () {
+            showTable("totalparts");
+        });
+
+        function showTable() {            
+            totalParts.hide();
+            let userSeq = userID.val();
+
+            if (totalPartsTable === null) {
+                totalPartsTable = $('#totalparts-table').DataTable({
+                    language: datatablesLangKor('Index', 'ColorCode'),
+                    autoWidth: false,
+                    lengthChange: false,
+                    searching: false,
+                    info: false,
+                    paging: false,
+                    stateSave: true,
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: '/api/user/profile-parts-table-data',
+                        type: 'POST',
+                        data: {
+                            UserSeq: userSeq,
+                        },
+                        columnDefs: [
+                            {
+                                target: 5,
+                                orderable: false
+                            }
+                        ],
+                        createRow: function (row, data, dataIndex, cells) {
+                        }
+                    }
+                });
+            } else {
+                totalPartsTable.ajax.reload();
+            }
+            totalParts.show();
+            
+        }
+
+    </script>
+}

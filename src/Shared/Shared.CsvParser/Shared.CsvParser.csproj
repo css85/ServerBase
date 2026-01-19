@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <LangVersion>default</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shared.Clock\Shared.Clock.csproj" />
+      <ProjectReference Include="..\Shared.Packet.Server\Shared.Packet.Server.csproj" />
+    </ItemGroup>
+
+</Project>

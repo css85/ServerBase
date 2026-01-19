@@ -1,0 +1,357 @@
+﻿@page
+@model WebTool.Pages.Server.Config.Coupon.IndexModel
+@using WebTool.Controllers;
+@{
+    ViewData["Title"] = "쿠폰";
+    ViewData["ActiveMenu"] = "/Server/Config/Coupon/Index";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="row gap_between_parent_div">
+    <div class="col-12">
+        <button type="button" class="btn btn-primary btn-lg float-right" id="logPage" style="margin-left: 20px;">로그</button>
+        <button type="button" class="btn btn-primary btn-lg float-right" id="registPage">등록</button>
+    </div>
+</div>
+
+<div id="registPageRoot">
+    <div class="select_coupontype rcorners2 gap_between_parent_div">
+        <div class="row">
+            <div class="col-4">
+                <label for="duplicated" class="selected-coupon-label"><input type="radio" name="select_coupontype_checked" id="duplicated" value="true" checked />중복 쿠폰 가능형</label>
+                <label for="single" class="selected-coupon-label"><input type="radio" name="select_coupontype_checked" id="single" value="false" />중복 쿠폰 불가능형</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="rcorners2 gap_between_parent_div">
+        <div class="row">
+            <div class="col-6">
+                <a style="width:100%;"><strong>쿠폰 ID</strong></a>
+                <input type="text" id="inputCouponID" />
+            </div>
+        </div>
+    </div>
+
+    <div class="rcorners2 gap_between_parent_div">
+        <div class="row">
+            <div class="col-6 text-center">
+                <div style="height: 50px">
+                    <strong>보상그룹</strong>
+                    <select id="select_group_id">
+                        @for (var i = 0; i < Model.TotalSelectIndex(); i++)
+                        {
+                            <option value="@(i + 1)">Group@(i + 1)</option>
+                        }
+                    </select>
+                </div>
+                <div style="height: 50px;">
+                    <strong style="padding-top: 30px;">최대 받을 수 있는 유저 수</strong><input type="number" id="maximum_receive_user_count" value="0" />
+                </div>
+            </div>
+            <div class="col-6">
+                <table id="table_reward_group" class="text-center">
+                    <thead>
+                        <tr>
+                            <th style="width: 200px;">아이템 이름</th>
+                            <th style="width: 50px;">수량</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="rcorners2 gap_between_parent_div">
+        <div class="row text-center">
+            <strong>사용 기간 (UTC 기준)</strong>
+            <div class="col-md-3 col-sm-12">
+                <div id="CouponStart" class="input-group" data-target-input="nearest">
+                    <input type="text" id="CouponStartValue" class="form-control" data-target="#CouponStart" />
+                    <div class="input-group-append" data-target="#CouponStart" data-toggle="datetimepicker">
+                        <div class="input-group-text">
+                            <i class="far fa-calendar"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a><strong>~</strong></a>
+            <div class="col-md-3 col-sm-12">
+                <div id="CouponEnd" class="input-group" data-target-input="nearest">
+                    <input type="text" id="CouponEndValue" class="form-control" data-target="#CouponEnd" />
+                    <div class="input-group-append" data-target="#CouponEnd" data-toggle="datetimepicker">
+                        <div class="input-group-text">
+                            <i class="far fa-calendar"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="registCoupon" class="btn-info btn-lg">등록</button>
+        </div>
+    </div>
+</div>
+
+<div id="logPageRoot" class="row">
+    <div class="col-12">
+        <button type="button" id="export_excel" class="btn btn-info btn-sm">엑셀</button>
+        <button type="button" id="search_btn" class="btn btn-primary btn-sm float-right" style="margin-left: 20px;">검색</button>
+        <input type="text" id="search_value" name="search_value" style="margin-left: 20px;" class="float-right"/>
+        <select id="search_filter" name="search_filter" class="float-right">
+            <option value="0" selected>쿠폰 ID</option>
+            <option value="1">유저 ID</option>
+        </select>
+    </div>
+</div>
+
+
+<div id="loading" style="display: none;">
+    <div class="overlay modal d-flex justify-content-center align-items-center" style="background: #00000055;">
+        <i class="fas fa-2x fa-sync fa-spin"></i>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
+    <style>
+        .gap_between_parent_div {
+            margin-bottom: 30px;
+        }
+
+        input[type=radio] {
+            margin-right: 10px;
+        }
+
+        strong {
+            margin-right: 10px;
+        }
+
+        .selected-coupon-label {
+            margin-left: 30px;
+            margin-right: 30px;
+        }
+
+        .rcorners2 {
+            border-radius: 25px;
+            border: 2px solid #0000FF;
+            padding: 20px;
+            width: 100%;
+            height: 100%;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #000000;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script>
+        let inputID = $('#inputCouponID');
+        let selectReward = $('#select_group_id');
+        let rewardTable = $('#table_reward_group');
+        let registButton = $('#registCoupon');
+        let couponStartDate = $('#CouponStart');
+        let couponEndDate = $('#CouponEnd');
+        let maxUser = $('#maximum_receive_user_count');
+        let couponStartDateValue = $('#CouponStartValue');
+        let couponEndDateValue = $('#CouponEndValue');
+        let loading = $('#loading');
+        let logTabButton = $('#logPage');
+        let registTabButton = $('#registPage');
+        let logPageRoot = $('#logPageRoot');
+        let registPageRoot = $('#registPageRoot');
+        let logTableRoot = $('#coupon-id-table');
+        let logTableContent = null;
+        let rewardTableContent = null;
+        let searchValue = $('#search_value');
+        let searchFilter = $('#search_filter');
+        let searchBtn = $('#search_btn');
+        let exportExcelBtn = $('#export_excel');
+
+        selectReward.change(function () {
+            var type = $(this).val();
+            rendering_rewardtable_byGroupID(type);
+        });
+
+        logTabButton.click(function () {
+            activeLogPage();
+        });
+
+        registTabButton.click(function () {
+            activeRegistPage();
+        });
+
+        searchBtn.click(function () {
+            showLogTable();
+        });
+
+        exportExcelBtn.click(function () {
+            exportLogData();
+        });
+
+        function activeRegistPage() {
+            registPageRoot.show();
+            logPageRoot.hide();
+        }
+
+        function activeLogPage() {
+            logPageRoot.show();
+            showLogTable();
+            registPageRoot.hide();
+        }
+
+        registButton.click(function () {
+            startLoading();
+            let isDuplicate = $('input[name=select_coupontype_checked]:checked').val();
+            let couponID = inputID.val();
+            let groupNumber = selectReward.val();
+            let maxUserCount = maxUser.val();
+            let start_dt = couponStartDateValue.val();
+            let end_dt = couponEndDateValue.val();
+
+            $.ajax({
+                url: '/api/server/coupon-regist',
+                type: 'POST',
+                data: {
+                    isDuplicated: isDuplicate,
+                    ID: couponID,
+                    Group: groupNumber,
+                    MaxUser: maxUserCount,
+                    StartDt: start_dt,
+                    EndDt: end_dt,
+                },
+                success: function (response) {
+                    alert('성공');
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                },
+                complete: function (response) {
+                    endLoading();
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            activeRegistPage();
+
+            rendering_rewardtable_byGroupID(1);
+
+            couponStartDate.datetimepicker(dateTimePickerOption_UtcAddOneDay);
+            couponEndDate.datetimepicker(dateTimePickerOption_UtcAddOneDay);
+        });
+
+        function rendering_rewardtable_byGroupID(groupID) {
+            if (rewardTableContent !== null) {
+                rewardTable.DataTable().clear().destroy();
+            }
+
+            rewardTableContent = rewardTable.DataTable({
+                language: datatablesLangKor('아이템 이름', '수량'),
+                autoWidth: true,
+                lengthChange: false,
+                pageLength: 20,
+                paging: true,
+                searching: false,
+                info: false,
+                ordering: false,
+                stateSave: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/api/server/coupon-reward-list',
+                    type: 'POST',
+                    data: {
+                        type: groupID,
+                    },
+                    columnDefs: [
+                        {
+                            target: [0],
+                            orderable: false,
+                            width: "200px",
+                        },
+                        {
+                            target: [1],
+                            orderable: false,
+                            width: "50px",
+                        }
+                    ],
+                    createRow: function (row, data, dataIndex, cells) {
+                    }
+                }
+            });
+        }
+
+        function showLogTable() {
+            if (logTableContent !== null) {
+                logTableRoot.DataTable().clear().destroy();
+            }
+
+            let filter = searchFilter.val();
+            let searchVal = searchValue.val();
+
+            logTableContent = logTableRoot.DataTable({
+                language: datatablesLangKor('쿠폰 ID', '유저 ID', '사용일자'),
+                autoWidth: true,
+                lengthChange: false,
+                paging: true,
+                searching: false,
+                info: false,
+                ordering: false,
+                stateSave: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/api/server/load-couponlist',
+                    type: 'POST',
+                    data: {
+                        Filter: filter,
+                        SearchValue : searchVal,
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                },
+                columnDefs: [
+                    {
+                        target: 2,
+                        orderable: false,
+                    }
+                ],
+                createRow: function (row, data, dataIndex, cells) {
+                },
+            });
+        }
+
+        function startLoading() {
+            loading.show();
+        }
+
+        function endLoading() {
+            loading.hide();
+        }
+
+        function exportLogData() {
+            let filter = searchFilter.val();
+            let searchVal = searchValue.val();
+
+            window.location.href = "@Url.Action("ExportCouponLogCSVData", "Server")" + "?filter=" + filter + "&searchValue=" + searchVal;
+        }
+    </script>
+}

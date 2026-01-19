@@ -1,0 +1,36 @@
+{
+  "DatabaseSettings": {
+    "DatabaseProviderType": "MySQL",
+    "GateConnectionStrings": [
+      "Server=127.0.0.1;Port=3400;Database=app;User=bluegames;Password=123qwe!@#;SslMode=None;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "ExchangeConnectionStrings": [
+      "Server=127.0.0.1;Port=3400;Database=app;User=bluegames;Password=123qwe!@#;SslMode=None;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "AccountConnectionStrings": [
+      "Server=127.0.0.1;Port=3400;Database=account;User=bluegames;Password=123qwe!@#;SslMode=None;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "UserConnectionStrings": [
+      "Server=127.0.0.1;Port=3400;Database=db0;User=bluegames;Password=123qwe!@#;SslMode=None;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;",
+      "Server=127.0.0.1;Port=3401;Database=db1;User=bluegames;Password=123qwe!@#;SslMode=None;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "ChatConnectionStrings": [
+      "Server=127.0.0.1;Port=3400;Database=db0;User=bluegames;Password=123qwe!@#;SslMode=None;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;",
+      "Server=127.0.0.1;Port=3401;Database=db1;User=bluegames;Password=123qwe!@#;SslMode=None;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "MailConnectionStrings": [
+      "Server=127.0.0.1;Port=3400;Database=db0;User=bluegames;Password=123qwe!@#;SslMode=None;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;",
+      "Server=127.0.0.1;Port=3401;Database=db1;User=bluegames;Password=123qwe!@#;SslMode=None;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "WebToolConnectionString": "Server=127.0.0.1;Port=3400;Database=app;User=bluegames;Password=123qwe!@#;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;",
+    "EnableQueryLogging":true
+  },
+  "RedisConfiguration": {
+    "Hosts": [
+      {
+        "Host": "127.0.0.1",
+        "Port": "7400"
+      }
+    ]
+  }
+}

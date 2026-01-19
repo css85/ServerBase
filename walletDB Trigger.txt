@@ -1,0 +1,117 @@
+DELIMITER $$
+CREATE TRIGGER `MFL_Minting_Rod_History_BEFORE_INSERT` BEFORE INSERT ON `MFL_Minting_Rod_History` FOR EACH ROW BEGIN
+	DECLARE autoSeq BIGINT DEFAULT 0;
+	
+	SELECT AUTO_INCREMENT into autoSeq
+   FROM information_schema.tables
+   WHERE TABLE_NAME = 'MFL_Minting_Rod_History'
+   AND table_schema = DATABASE();
+   
+	SET NEW.item_id = CONCAT('MFL_ROD_',autoSeq-1);
+END $$
+DELIMITER;
+
+DELIMITER $$
+CREATE TRIGGER `MFL_Minting_Reel_History_BEFORE_INSERT` BEFORE INSERT ON `MFL_Minting_Reel_History` FOR EACH ROW BEGIN
+	DECLARE autoSeq BIGINT DEFAULT 0;
+	
+	SELECT AUTO_INCREMENT into autoSeq
+   FROM information_schema.tables
+   WHERE TABLE_NAME = 'MFL_Minting_Reel_History'
+   AND table_schema = DATABASE();
+   
+	SET NEW.item_id = CONCAT('MFL_REEL_',autoSeq-1);
+END $$
+DELIMITER;
+
+DELIMITER $$
+CREATE TRIGGER `MFL_Minting_Lure_History_BEFORE_INSERT` BEFORE INSERT ON `MFL_Minting_Lure_History` FOR EACH ROW BEGIN
+	DECLARE autoSeq BIGINT DEFAULT 0;
+	
+	SELECT AUTO_INCREMENT into autoSeq
+   FROM information_schema.tables
+   WHERE TABLE_NAME = 'MFL_Minting_Lure_History'
+   AND table_schema = DATABASE();
+   
+	SET NEW.item_id = CONCAT('MFL_LURE_',autoSeq-1);
+END $$
+DELIMITER;
+
+DELIMITER $$
+CREATE TRIGGER `MFL_Minting_Gloves_History_BEFORE_INSERT` BEFORE INSERT ON `MFL_Minting_Gloves_History` FOR EACH ROW BEGIN
+	DECLARE autoSeq BIGINT DEFAULT 0;
+	
+	SELECT AUTO_INCREMENT into autoSeq
+   FROM information_schema.tables
+   WHERE TABLE_NAME = 'MFL_Minting_Gloves_History'
+   AND table_schema = DATABASE();
+   
+	SET NEW.item_id = CONCAT('MFL_GLOVES_',autoSeq-1);
+END $$
+DELIMITER;
+
+DELIMITER $$
+CREATE TRIGGER `MFL_Minting_Buffcard_History_BEFORE_INSERT` BEFORE INSERT ON `MFL_Minting_Buffcard_History` FOR EACH ROW BEGIN
+	DECLARE autoSeq BIGINT DEFAULT 0;
+	
+	SELECT AUTO_INCREMENT into autoSeq
+   FROM information_schema.tables
+   WHERE TABLE_NAME = 'MFL_Minting_Buffcard_History'
+   AND table_schema = DATABASE();
+   
+	SET NEW.item_id = CONCAT('MFL_BUFFCARD_',autoSeq-1);
+END $$
+DELIMITER;
+
+
+
+INSERT INTO `NFT_item_grade`
+VALUES (1,'Common'),(2,'Rare'),(3,'Epic'),(4,'Legendary'),(5,'Mythic');
+
+INSERT INTO `NFT_game_type`
+VALUES(1, 'MFL'),(2, 'MGL');
+
+INSERT INTO `NFT_equipment_type`
+VALUES(1, 'Rod'),(2, 'Reel'),(3, 'Gloves'),(4, 'Lure'),(5, 'Buffcard');
+
+ALTER TABLE `NFT_item_info`
+	ADD CONSTRAINT `FK_NFT_item_info_NFT_item_grade_grade_id` FOREIGN KEY (`grade_id`) REFERENCES `NFT_item_grade` (`grade_id`) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE `NFT_item_info`
+	ADD CONSTRAINT `FK_NFT_item_info_NFT_game_type_index` FOREIGN KEY (`game_type`) REFERENCES `NFT_game_type` (`index`) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE `NFT_item_info`
+	ADD CONSTRAINT `FK_NFT_item_info_NFT_equipment_type_index` FOREIGN KEY (`equipment_type`) REFERENCES `NFT_equipment_type` (`index`) ON UPDATE NO ACTION ON DELETE NO ACTION;
+	
+
+INSERT INTO `MFL_status_category`
+VALUES(1, 'BasicAttack'),(2, 'CriticalProb'),(3, 'Tension'),(4, 'AddAttack'),(5, 'BiteBonus');
+
+INSERT INTO `MFL_species_type`
+VALUES(0, 'None'),(1, 'OneFish'),(2, 'Balaenoptera'),(3, 'Selachimorpha'),(4, 'Anguilliformes'),(5, 'Paralichthyidae')
+,(6, 'Cyprinidae'),(7, 'Clupeidae'),(8, 'Cutlassfish'),(9, 'Sparidae'),(10, 'Thunnini'),
+(11, 'Istiophorus'),(12, 'Gadidae'),(13, 'Etc');
+
+
+
+
+ALTER TABLE `MFL_item_basics_status`
+	ADD CONSTRAINT `FK_basics_status_cateory_fkey` FOREIGN KEY (`status_category`) REFERENCES `MFL_status_category` (`index`) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `MFL_item_option_status`
+	ADD CONSTRAINT `FK_option_status_cateory_fkey` FOREIGN KEY (`status_category`) REFERENCES `MFL_status_category` (`index`) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `MFL_item_upgrade_status`
+	ADD CONSTRAINT `FK_upgrade_status_cateory_fkey` FOREIGN KEY (`status_category`) REFERENCES `MFL_status_category` (`index`) ON UPDATE NO ACTION ON DELETE NO ACTION;		
+
+ALTER TABLE `MFL_item_basics_status`
+	ADD CONSTRAINT `FK_basics_species_type_fkey` FOREIGN KEY (`species_type`) REFERENCES `MFL_species_type` (`index`) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `MFL_item_option_status`
+	ADD CONSTRAINT `FK_option_species_type_fkey` FOREIGN KEY (`species_type`) REFERENCES `MFL_species_type` (`index`) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `MFL_item_upgrade_status`
+	ADD CONSTRAINT `FK_upgrade_species_type_fkey` FOREIGN KEY (`species_type`) REFERENCES `MFL_species_type` (`index`) ON UPDATE NO ACTION ON DELETE NO ACTION;	
+	
+ALTER TABLE `MFL_item_basics_status`
+	ADD CONSTRAINT `FK_basics_fish_index_fkey` FOREIGN KEY (`fish_index`) REFERENCES `MFL_fish` (`index`) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `MFL_item_option_status`
+	ADD CONSTRAINT `FK_option_fish_index_fkey` FOREIGN KEY (`fish_index`) REFERENCES `MFL_fish` (`index`) ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE `MFL_item_upgrade_status`
+	ADD CONSTRAINT `FK_upgrade_fish_index_fkey` FOREIGN KEY (`fish_index`) REFERENCES `MFL_fish` (`index`) ON UPDATE NO ACTION ON DELETE NO ACTION;		

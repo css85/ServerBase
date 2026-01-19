@@ -1,0 +1,77 @@
+﻿@page
+@model WebTool.Pages.Indicator.PlayCount.TheMoveModel
+@{
+    ViewData["Title"] = "더 무브";
+    ViewData["ActiveMenu"] = "/Indicator/PlayCount/TheMove";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="row paragraph">
+    <div class="col-12 paragraph">
+        <button type="button" id="dancebattle" class="btn btn-info btn-lg space">안무 배틀</button>
+        <button type="button" id="oneside" class="btn btn-info btn-lg space">원 사이드</button>
+        <button type="button" id="coupledance" class="btn btn-info btn-lg space">커플 댄스</button>
+        <button type="button" id="maxbeat" class="btn btn-info btn-lg space">맥스 비트</button>
+        <button type="button" id="popstar" class="btn btn-info btn-lg space">팝 스타</button>
+    </div>
+    <div class="col-1">
+        <select id="serverSelect" style="height: 40px;">
+            <option value="Server">Server 1</option>
+        </select>
+    </div>
+    <div class="col-md-3 col-sm-12">
+        <div id="SearchDate" class="input-group" data-target-input="nearest">
+            <input type="text" id="SearchDateValue" class="form-control" data-target="#SearchDate" />
+            <div class="input-group-append" data-target="#SearchDate" data-toggle="datetimepicker">
+                <div class="input-group-text">
+                    <i class="far fa-calendar"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-1">
+        <button type="button" id="search" class="btn btn-secondary">검색</button>
+    </div>
+    <div class="col-12" style="margin-top: 30px;">
+        <table id="table-themove" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+            <thead>
+                <tr>
+                    @for (var i = 0; i < Model.columnHeader.Length; i++)
+                    {
+                        <th>@Model.columnHeader[i]</th>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .space {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .paragraph {
+            margin-bottom: 30px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css"></script>
+    <script>
+        $(document).ready(function () {
+            $('#SearchDate').datetimepicker(dateTimePickerOption_UtcNow_WithoutTime);
+        });
+
+    </script>
+}

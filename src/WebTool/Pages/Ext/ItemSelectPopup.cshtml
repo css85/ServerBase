@@ -1,0 +1,433 @@
+﻿@page
+@using WebTool.Extensions
+@using WebTool.Base.Item
+@using Shared.Server.Extensions
+@using Shared
+@model WebTool.Pages.Ext.ItemSelectPopupModel
+@{
+    Layout = "_LayoutContentsOnly";
+    ViewData["Title"] = "아이템 선택";
+}
+
+<div class="row mb-2">
+    <div class="col-3">
+        <select id="itemCategorySelect" style="width: 100%">
+            @foreach (var item in Model.Categories)
+            {
+                <option value="@((int)item)">@item.GetNameLanguageKey()</option>
+            }
+        </select>
+    </div>
+    <div class="col-1">
+    </div>
+    <div class="col-8">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <button type="button" class="btn btn-default">수량</button>
+            </div>
+            <input type="text" class="form-control" id="countText" placeholder="수량" />
+        </div>
+    </div>
+</div>
+
+<div id="monetaryRoot" style="display: none;">
+    <div class="row"  style="flex-direction: row-reverse;">
+        <button type="button" class="btn btn-primary pl-5 pr-5" onclick="selectItem(0, @((int)SelectItemType.CurrencyStart))">선택</button>
+    </div>
+</div>
+
+<div id="itemTableRoot" style="display: none;">
+    <div class="row">
+        <div class="col-12">
+            <table id="itemTable" class="table table-bordered table-striped table-hover dataTable dtr-inline">
+                <thead>
+                    <tr>
+                        @foreach (var columnInfo in WebTool.Controllers.SelectItemController.DefaultTableDataColumnInfos)
+                        {
+                            <th>
+                                @columnInfo.Name
+                            </th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="costumeTableRoot" style="display: none;">
+    <div class="row mb-2">
+        <div class="col-3">
+            <select id="costumePeriodSelect" style="width: 100%">
+                @*@foreach (var item in Model.Periods)
+        {
+            <option value="@(item.GetMinutes())">@item.GetNameLanguageKey()</option>
+        }*@
+                @*@for (var i = 0; i < Model.Periods.Length; i++)
+                {
+                    <option value="@(i)">@Model.Periods[i].GetNameLanguageKey()</option>
+                }*@
+            </select>
+        </div>
+        <div id="costumePeriodTextRoot" class="col-6" style="display: none;">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <button type="button" class="btn btn-default">기한</button>
+                </div>
+                <input type="text" class="form-control" id="costumePeriodText"/>
+            </div>
+        </div>
+        </div>
+    <div class="row">
+        <div class="col-12">
+            <table id="costumeTable" class="table table-bordered table-striped table-hover dataTable dtr-inline">
+                <thead>
+                    <tr>
+                        @foreach (var columnInfo in WebTool.Controllers.SelectItemController.CostumeTableDataColumnInfos)
+                        {
+                            <th>
+                                @columnInfo.Name
+                            </th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Styles
+{
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2/css/select2.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
+    <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+
+    <style>
+        .select2-container--default .select2-results > .select2-results__options {
+            max-height: 400px;
+        }
+    </style>
+}
+
+@section Scripts
+{
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css"></script>
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#itemCategorySelect').select2();
+            $('#itemCategorySelect').on('select2:select',
+                function(e) {
+                    onCategorySelectChanged();
+                });
+
+            var defaultItemCategory = localStorage.getItem('select2:itemCategorySelect:default');
+            if (defaultItemCategory !== null) {
+                $('#itemCategorySelect').val(defaultItemCategory).trigger('change');
+            }
+
+            $("#countText").on('change keyup paste mouseup', function () {
+                localStorage.setItem('text:countText:default', $(this).val());
+            });
+
+            var defaultCountText = localStorage.getItem('text:countText:default');
+            if (defaultCountText !== null) {
+                $('#countText').val(defaultCountText);
+            }
+
+            $("#costumePeriodText").on('change keyup paste mouseup', function () {
+                localStorage.setItem('text:costumePeriodText:default', $(this).val());
+            });
+
+            var defaultCostumePeriodtText = localStorage.getItem('text:costumePeriodText:default');
+            if (defaultCostumePeriodtText !== null) {
+                $('#costumePeriodText').val(defaultCostumePeriodtText);
+            }
+
+            onCategorySelectChanged();
+        });
+
+        var activeDataTable = null;
+        var itemDataTable = null;
+        var costumeDataTable = null;
+
+        function onCategorySelectChanged() {
+            if ($('#itemCategorySelect').select2('data').length !== 0) {
+                var selectItemType = $('#itemCategorySelect').select2('data')[0].id;
+                showTable(selectItemType);
+
+                localStorage.setItem('select2:itemCategorySelect:default', selectItemType);
+            }
+        }
+
+        function onCostumePeriodSelectChanged() {
+            if ($('#costumePeriodSelect').select2('data').length !== 0) {
+                let minutes = $('#costumePeriodSelect').select2('data')[0].id;
+                localStorage.setItem('select2:costumePeriodSelect:default', minutes);
+
+                if (minutes === '0') {
+                    $('#costumePeriodTextRoot').show();
+                } else {
+                    $('#costumePeriodTextRoot').hide();
+                }
+            } else {
+                $('#costumePeriodTextRoot').hide();
+            }
+        }
+
+        function getSelectItemCategoryType(selectItemType) {
+            return selectItemType - (selectItemType % 100);
+        }
+
+        function getSelectItemObtainType(selectItemType) {
+            //return Math.floor(selectItemType / 100);
+            let result = 0;
+            let typeToInt = parseInt(selectItemType);
+            switch (typeToInt) {
+                case @((int)SelectItemType.Ruby):
+                case @((int)SelectItemType.Den):
+                    result = @((byte)RewardPaymentType.Currency);
+                    break;
+                //case @((int)SelectItemType.Costume):
+                //case @((int)SelectItemType.CostumeStart):
+                //    result = @((byte)RewardPaymentType.Material);
+                //    break;
+                //case @((int)SelectItemType.Couple_Costume):
+                //    result = @((byte)RewardPaymentType.Material);
+                //    break;
+                //case @((int)SelectItemType.Item_Global_Functional):
+                //    result = @((byte)RewardPaymentType.Material);
+                //    break;
+                //case @((int)SelectItemType.Item_Global_Buff):
+                //    result = @((byte)RewardPaymentType.Material);
+                //    break;
+                //case @((int)SelectItemType.Item_ShoppingMall_Coupon):
+                //    result = @((byte)RewardPaymentType.Material);
+                //    break;
+                //case @((int)SelectItemType.Item_ShoppingMall_Functional):
+                //    result = @((byte)RewardPaymentType.Material);
+                //    break;
+                //case @((int)SelectItemType.Item_ShowDancer_Functional):
+                //    result = @((byte)RewardPaymentType.Material);
+                //    break;
+                //case @((int)SelectItemType.Item_Event_Box):
+                //    result = @((byte)RewardPaymentType.Material);
+                //    break;
+                //case @((int)SelectItemType.Item_Costume_Deco):
+                //    result = @((byte)RewardPaymentType.Material);
+                //    break;
+                //case @((int)SelectItemType.Item_ShowPuzzle_Functional):
+                //    result = @((byte)RewardPaymentType.Material);
+                //    break;
+                //case @((int)SelectItemType.Item_ShoppingMall_Ticket):
+                //    result = @((byte)RewardPaymentType.Material);
+                //    break;
+                //case @((int)SelectItemType.Item_DanceMaster):
+                //    result = @((byte)RewardPaymentType.Material);
+                //    break;
+                //case @((int)SelectItemType.Item_DanceMaster_Jewel):
+                //    result = @((byte)RewardPaymentType.Material);
+                //    break;
+                //case @((int)SelectItemType.Item_Collection_Material):
+                //    result = @((byte)RewardPaymentType.Material);
+                //    break;
+                default:
+                    result = @((byte)RewardPaymentType.Material);
+//                    alert("잘못된 아이템 타입입니다.");
+                    break;
+            }
+            return result;
+        }
+
+        function getSelectItemSubType(selectItemType) {
+            return selectItemType % 100;
+        }
+
+        function showTable(selectItemType) {
+            var monetaryRoot = $('#monetaryRoot');
+            var itemTableRoot = $('#itemTableRoot');
+            var costumeTableRoot = $('#costumeTableRoot');
+
+            monetaryRoot.hide();
+            itemTableRoot.hide();
+            costumeTableRoot.hide();
+
+            var selectItemCategoryType = getSelectItemCategoryType(selectItemType);
+
+            if (selectItemCategoryType === @((int) SelectItemType.CurrencyStart)) {
+                monetaryRoot.show();
+            }
+            else if (selectItemCategoryType === @((int) SelectItemType.CostumeStart)) {
+                if (costumeDataTable === null) {
+                    $('#costumePeriodSelect').select2();
+                    $('#costumePeriodSelect').on('select2:select',
+                        function (e) {
+                            onCostumePeriodSelectChanged();
+                        });
+
+                    var defaultCostumePeriod = localStorage.getItem('select2:costumePeriodSelect:default');
+                    if (defaultCostumePeriod !== null) {
+                        $('#costumePeriodSelect').val(defaultCostumePeriod).trigger('change');
+                    }
+
+                    costumeDataTable = $('#costumeTable').DataTable({
+                        language: datatablesLangKor('이름'),
+                        autoWidth: false,
+                        stateSave: true,
+                        lengthMenu: [10, 13, 20, 30, 50, 100],
+                        pageLength: 10,
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url: '/api/select-item/costume-table-data',
+                            type: 'POST',
+                            data: {
+                                'type': function () {
+                                    return $('#itemCategorySelect').select2('data')[0].id;
+                                }
+                            }
+                        },
+                        columnDefs: [
+                            {
+                                targets: 9,
+                                orderable: false
+                            }
+                        ],
+                        createdRow: function (row, data, dataIndex, cells) {
+                            $(cells[9]).html('<button type="button" class="btn btn-block btn-primary btn-xs" onclick="selectItem(' + dataIndex + ',' + data[0] + ')">선택</button>');
+                        }
+                    });
+                } else {
+                    costumeDataTable.ajax.reload();
+                }
+                activeDataTable = costumeDataTable;
+                costumeTableRoot.show();
+                onCostumePeriodSelectChanged();
+            } else if (selectItemCategoryType === @((int) SelectItemType.ItemStart)) {
+                if (itemDataTable === null) {
+                    itemDataTable = $('#itemTable').DataTable({
+                        language: datatablesLangKor('이름'),
+                        autoWidth: false,
+                        stateSave: true,
+                        lengthMenu: [10, 13, 20, 30, 50, 100],
+                        pageLength: 10,
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url: '/api/select-item/item-table-data',
+                            type: 'POST',
+                            data: {
+                                'type': function() {
+                                    return $('#itemCategorySelect').select2('data')[0].id;
+                                }
+                            }
+                        },
+                        columnDefs: [
+                            {
+                                targets: 2,
+                                orderable: false
+                            }
+                        ],
+                        createdRow: function(row, data, dataIndex, cells) {
+                            $(cells[2]).html('<button type="button" class="btn btn-block btn-primary btn-xs" onclick="selectItem(' + dataIndex + ',' + data[0] + ')">선택</button>');
+                        }
+                    });
+                } else {
+                    itemDataTable.ajax.reload();
+                }
+                activeDataTable = itemDataTable;
+                itemTableRoot.show();
+            } else {
+                activeDataTable = null;
+            }
+        }
+
+        function selectItem(dataIndex, id) {
+            var selectItemType = $('#itemCategorySelect').select2('data')[0].id;
+            var selectItemName = $('#itemCategorySelect').select2('data')[0].text;
+            var countText = $('#countText').val() + '개';
+            var countValue = $('#countText').val();
+
+            if ($.isNumeric($('#countText').val()) === false) {
+                alert("수량을 입력해주세요.");
+                return;
+            }
+
+            var name = "";
+            var value = "";
+
+            var selectItemCategoryType = getSelectItemCategoryType(selectItemType);
+            var obtainType = getSelectItemObtainType(selectItemType);
+            var subType = getSelectItemSubType(selectItemType);
+            if (selectItemCategoryType === @((int) SelectItemType.CostumeStart)) {
+                //var costumePeriodName = $('#costumePeriodSelect').select2('data')[0].text;
+                //var costumePeriodValue = $('#costumePeriodSelect').select2('data')[0].id;
+                //if (costumePeriodValue === '0') {
+                //    costumePeriodValue = parseInt($('#costumePeriodText').val());
+                //    if (costumePeriodValue === undefined || isNaN(costumePeriodValue) || costumePeriodValue <= 0) {
+                //        alert("기한이 잘못되었습니다.");
+                //        return;
+                //    }
+                //    costumePeriodName = costumePeriodValue + '분';
+                //} else {
+                //    costumePeriodValue = getPeriodTypeToMinutes(costumePeriodValue);
+                //}
+                //name = selectItemName + '(' + id + ', ' + costumePeriodName + ', ' + countText + '):</br>' + activeDataTable.rows(dataIndex).data()[0][8];
+                //value = makeReturnValue(obtainType, id, countValue, costumePeriodValue);
+            } else if (selectItemCategoryType === @((int) SelectItemType.ItemStart)) {
+                name = selectItemName + '(' + id + ', ' + countText + '):</br>' + activeDataTable.rows(dataIndex).data()[0][1];
+                value = makeReturnValue(obtainType, id, countValue, 0);
+            } else if (selectItemCategoryType === @((int) SelectItemType.CurrencyStart)) {
+                var checkLimit = false;
+                switch (subType) {
+                    case 1:
+                        if (parseInt(countText) > 1000) {
+                            checkLimit = confirm("최대로 지급할 수 있는 루비의 수량을 초과하였습니다.\n지급하시겠습니까? (한도 : 1,000)");
+                        } else {
+                            checkLimit = true;
+                        }
+                        break;
+                    case 2:
+                        if (parseInt(countText) > 500000) {
+                            checkLimit = confirm("최대로 지급할 수 있는 덴의 수량을 초과하였습니다.\n지급하시겠습니까? (한도 : 500,000");
+                        } else {
+                            checkLimit = true;
+                        }
+                        break;
+                }
+
+                if (checkLimit) {
+                    name = selectItemName + ' ' + countText;
+                    value = makeReturnValue(obtainType, subType, countValue, 0);
+                } else {
+                    return;
+                }
+            } else {
+                name = selectItemName + ' ' + countText;
+                value = makeReturnValue(obtainType, id, countValue, 0);
+            }
+
+            window.opener.onItemSelected(@(Request.Query["index"]), name, value);
+            window.close();
+        }
+
+        
+        function makeReturnValue(type, name, value, period) {
+            var result = "";
+            for (var i = 0; i < arguments.length; i++) {
+                if (i !== 0) {
+                    result += "|";
+                }
+                result += parseInt(arguments[i]).toString(16);
+            }
+
+            return result;
+        }
+    </script>
+}

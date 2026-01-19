@@ -1,0 +1,89 @@
+﻿@page
+@model WebTool.Pages.Operation.Upload.UploadModel
+@{
+    ViewData["Title"] = "CSV 업로드";
+    ViewData["ActiveMenu"] = "/Operation/Upload";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="row">
+    <form id="uploadFrm" enctype="multipart/form-data" method="post">
+        <input type="file" multiple id="files" accept=".csv" />
+        <button type="button" id="upload-file">클릭</button>
+    </form>
+</div>
+
+<div class="row" style="margin-top: 30px;">
+    <div class="col-3">
+        <table class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+            <thead>
+            </thead>
+            <tbody id="table-upload-filelist" >
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css"></script>
+    <script>
+        let fileUpload = $('#files')[0];
+        let btnFileUpload = $('#upload-file');
+        let tableContent = $('#table-upload-filelist');
+        btnFileUpload.click(sendFile);
+        fileUpload.addEventListener("change", refreshFileList);
+
+        function refreshFileList() {
+            tableContent.empty();
+            let files = fileUpload.files;
+            let html = '';
+            for (var i = 0; i < files.length; i++) {
+                html += '<tr><td>' + files[i].name + '</tr></td>';
+            }
+            console.log(html);
+            tableContent.append(html);
+        }
+
+        function sendFile() {
+            let files = fileUpload.files;
+            if (files.length > 0) {
+                if (window.FormData != undefined) {
+                    let data = new FormData();
+                    for (var i = 0; i < files.length; i++) {
+                        data.append( 'files',  files[i]);
+                    }
+
+                    $.ajax({
+                        url: '/api/operation/internal-command/upload',
+                        type: 'POST',
+                        enctype: 'multipart/form-data',
+                        processData: false,
+                        contentType: false,
+                        data: data,
+                        success: function (result) {
+                            setTimeout(3000);
+                            alert('업로드가 완료되었습니다.');
+                        },
+                        error: function (xhr, status, p3, p4) {
+                            setTimeout(3000);
+                            alert(`업로드에 실패하였습니다.\n${xhr.responseText}`);
+                        },
+                        complete: function (response) {
+                            location.reload();
+                        }
+                    });
+                } else {
+                    alert("This browser doesn't support HTML5 file uploads!");
+                }
+            }
+        }
+
+    </script>
+}

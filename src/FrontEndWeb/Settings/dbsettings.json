@@ -1,0 +1,55 @@
+﻿{
+  "DatabaseSettings": {
+    "DatabaseProviderType": "MySQL",
+    "GateConnectionStrings": [
+      "Server=localhost;Port=3306;Database=gate;User=test;Password=test;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "UserConnectionStrings": [
+      "Server=localhost;Port=3306;Database=user;User=test;Password=test;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "StoreEventConnectionStrings": [
+      "Server=localhost;Port=3306;Database=store_event;User=test;Password=test;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "RedisAdminHostAndPort": "localhost:6400"
+  },
+  "RedisConfiguration": {
+    "AbortOnConnectFail": false,
+    "Password": "my_super_secret_password",
+    "AllowAdmin": true,
+    "Ssl": false,
+    "ConnectTimeout": 10000,
+    "SyncTimeout": 10000,
+    "ConnectRetry": 2,
+    "Database": 0,
+    "Hosts": [
+      {
+        "Host": "localhost",
+        "Port": "6400"
+      }
+    ],
+    "ServerEnumerationStrategy": {
+      "Mode": "All",
+      "TargetRole": "Any",
+      "UnreachableServerAction": "Throw"
+    },
+    "MaxValueLength": 1024,
+    "PoolSize": 10,
+    "KeyPrefix": "_"
+  },
+  "Caching": {
+    "InMemory": {
+      "EnableLogging":true,
+      "MaxRdSecond":120,
+      "LockMs": 5000,
+      "SleepMs": 300,
+      "SerializerName": "json",
+      "CacheNulls": false,
+      "DBConfig": {
+        "ExpirationScanFrequency": "60",
+        "SizeLimit": null,
+        "EnableReadDeepClone": true,
+        "EnableWriteDeepClone": false
+      }
+    }
+  }
+}

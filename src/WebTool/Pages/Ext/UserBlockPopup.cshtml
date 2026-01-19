@@ -1,0 +1,193 @@
+﻿@page
+@using WebTool.Controllers; 
+@model WebTool.Pages.Ext.UserBlockPopupModel
+@{
+    Layout = "_LayoutContentsOnly";
+}
+
+<div id="content-header">
+    <div class="row">
+        <div class="col-8">
+            <label class="text-center" style="background-color:black; width: 80%; color: blue">지금은 블락 중이 아닙니다.</label>
+        </div>
+        <div class="col-8">
+            <input type="radio" id="OneDay" name="blockDay" value="1" style="margin-right: 5px;" checked />
+            <label for="OneDay" style="margin-right: 10px;">
+                1일
+            </label>
+            <input type="radio" id="Week" name="blockDay" value="7" style="margin-right: 5px;" />
+            <label for="Week" style="margin-right: 10px;">
+                7일
+            </label>
+            <input type="radio" id="Month" name="blockDay" value="30" style="margin-right: 5px;" />
+            <label for="Month" style="margin-right: 10px;">
+                30일
+            </label>
+            <input type="radio" id="Forever" name="blockDay" value="0" style="margin-right: 5px;" />
+            <label for="Forever" style="margin-right: 10px;">
+                영구
+            </label>
+        </div>
+        <div class="col-8" style="margin-top: 20px;">
+            <a>블락 사유</a>
+            <input type="text" id="inputReason" />
+        </div>
+        <div class="col-4">
+            <button type="button" class="btn btn-secondary" id="BlockExtend" style="margin-top: 15px; color:red;">블락 연장</button>
+            <button type="button" class="btn btn-secondary" id="BlockRelease" style=" margin-top: 15px; color: blue;">블락 해제</button>
+        </div>
+    </div>
+</div>
+
+<div id="content-middle" style="margin-top: 20px;">
+    <div class="row">
+        <div class="col-12">
+            <table id="BlockHistory" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+                <thead>
+                    <tr>
+                        @foreach (var column in UserController.LoadPersonnalBlockHistory)
+                        {
+                            <th>
+                                @column.Name
+                            </th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="tab-footer" class="div-footer">
+    <button type="button" id="sendPush" class="float-right btn-secondary input-sendbutton">발송</button>
+</div>
+
+<div id="loading" style="display: none;">
+    <div class="overlay modal d-flex justify-content-center align-items-center" style="background: #00000055;">
+        <i class="fas fa-2x fa-sync fa-spin"></i>
+    </div>
+</div>
+
+<div>
+    <input type="hidden" id="save-user-id" value="@Model.UserSeq" />
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2/css/select2.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" />
+    <style>
+        label {
+            height: 80%;
+            font-size: 20px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script>
+        let userText = $('#save-user-id');
+        let reasonText = $('#inputReason');
+        let blockReleaseButton = $('#BlockRelease');
+        let blockExtendButton = $('#BlockExtend');
+        let loadingModal = $('#loading');
+
+        blockReleaseButton.click(function () {
+            let userID = userText.val();
+            let reason = reasonText.val();
+            startLoading();
+            $.ajax({
+                url: '/api/user/block-release',
+                type: 'POST',
+                data: {
+                    targetText: userID,
+                    unblockreason: reason,
+                },
+                success: function (result) {
+                    alert("성공");
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                },
+                complete: function () {
+                    endLoading();
+                    location.reload();
+                }
+            });
+        });
+
+        blockExtendButton.click(function () {
+            let userID = userText.val();
+            let reason = reasonText.val();
+            let blockDay = $('input[name=blockDay]:checked').val();
+            startLoading();
+            $.ajax({
+                url: '/api/user/block-extend',
+                type: 'POST',
+                data: {
+                    targetText: userID,
+                    selectDay: blockDay,
+                    blockreason: reason,
+                },
+                success: function (result) {
+                    alert('성공');
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                },
+                complete: function () {
+                    endLoading();
+                    location.reload();
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            showTable();
+        });
+
+        function showTable() {
+            let userID = userText.val();
+
+            $('#BlockHistory').DataTable({
+                language: datatablesLangKor('일시', '사유', '블락 기간', '관리자'),
+                autoWidth: false,
+                lengthChange: false,
+                paging: false,
+                searching: false,
+                info: false,
+                ordering: false,
+                stateSave: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/api/user/lookup-block-personnal',
+                    type: 'POST',
+                    data: {
+                        UserSeq: userID,
+                    },
+                    columnDefs: [
+                        {
+                            targets: 4,
+                            orderable: false,
+                        },
+                    ],
+                    createdRow: function (row, data, dataIndex, cells) {
+                    }
+                },
+            });
+        }
+
+        function startLoading() {
+            loadingModal.show();
+        }
+        function endLoading() {
+            loadingModal.hide();
+        }
+    </script>
+}

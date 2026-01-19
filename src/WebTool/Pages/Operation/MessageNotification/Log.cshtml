@@ -1,0 +1,113 @@
+﻿@page
+@model WebTool.Pages.Operation.MessageNotification.LogModel
+@using WebTool.Controllers; 
+@{
+    ViewData["Title"] = "로그";
+    ViewData["ActiveMenu"] = "/Operation/MessageNotification/Log";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <table id="log-table-root" class="table table-hover table-striped table-bordered text-center">
+            <thead>
+                <tr>
+                    @foreach (var column in ServerController.GetNtfLogInfo)
+                    {
+                        <th>
+                            @column.Name
+                        </th>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div id="loading" style="display: none;">
+    <div class="overlay modal d-flex justify-content-center align-items-center" style="background: #00000055;">
+        <i class="fas fa-2x fa-sync fa-spin"></i>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script>
+        let logTableRoot = $('#log-table-root');
+        let loadingModal = $('#loading');
+
+        $(document).ready(function () {
+            showTable();
+        });
+
+        function showTable() {
+            logTableRoot.DataTable({
+                language: datatablesLangKor('내용', '예약 일시', '알림 일시', '예약 취소'),
+                autoWidth: false,
+                lengthChange: false,
+                paging: true,
+                pageLength: 10,
+                searching: false,
+                info: false,
+                ordering: false,
+                stateSave: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/api/server/load-ntfLog',
+                    type: 'POST',
+                },
+                createdRow: function (row, data, dataIndex, cells) {
+                    if (data[4] == "NotSend") {
+                        $(cells[4]).html(`<button type="button" class="btn btn-info" onclick="deleteReserve('${data[0]}')">삭제</button>`);
+                    }
+                },
+                columnDefs: [
+                    {
+                        targets: 1,
+                        orderable: false,
+                        width: 700,
+                    }
+                ],
+            });
+        }
+
+        function deleteReserve(seq) {
+            startLoading();
+
+            $.ajax({
+                url: '/api/server/delete-ntfLog',
+                type: 'POST',
+                data: {
+                    Seq: seq,
+                },
+                success: function (res) {
+                    alert('성공');
+                },
+                error: function (xhr, status, error) {
+                    alert(xhr.responseText);
+                },
+                complete: function (res) {
+                    endLoading();
+                    location.reload();
+                }
+            });
+        }
+
+        function startLoading() {
+            loadingModal.show();
+        }
+        function endLoading() {
+            loadingModal.hide();
+        }
+    </script>
+}

@@ -1,0 +1,37 @@
+{
+  "DatabaseSettings": {
+    "DatabaseProviderType": "MySQL",
+    "GateConnectionStrings": [
+      "Server=192.168.0.31;Port=3306;Database=app;User=bluegames;Password=123qwe!@#;SslMode=None;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "ExchangeConnectionStrings": [
+      "Server=192.168.0.31;Port=3306;Database=app;User=bluegames;Password=123qwe!@#;SslMode=None;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "AccountConnectionStrings": [
+      "Server=192.168.0.31;Port=3306;Database=account;User=bluegames;Password=123qwe!@#;SslMode=None;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "UserConnectionStrings": [
+      "Server=192.168.0.31;Port=3306;Database=db0;User=bluegames;Password=123qwe!@#;SslMode=None;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;",
+      "Server=192.168.0.31;Port=3307;Database=db1;User=bluegames;Password=123qwe!@#;SslMode=None;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "ChatConnectionStrings": [
+      "Server=192.168.0.31;Port=3306;Database=db0;User=bluegames;Password=123qwe!@#;SslMode=None;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;",
+      "Server=192.168.0.31;Port=3307;Database=db1;User=bluegames;Password=123qwe!@#;SslMode=None;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "MailConnectionStrings": [
+      "Server=192.168.0.31;Port=3306;Database=db0;User=bluegames;Password=123qwe!@#;SslMode=None;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;",
+      "Server=192.168.0.31;Port=3307;Database=db1;User=bluegames;Password=123qwe!@#;SslMode=None;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "WebToolConnectionString": "Server=192.168.0.31;Port=3307;Database=app;User=bluegames;Password=123qwe!@#;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;",
+    "EnableQueryLogging": false
+  },
+  "RedisConfiguration": {
+    "Hosts": [
+      {
+        "Host": "192.168.0.31",
+        "Port": "6379"
+      }
+    ],
+    "PoolSize": 10
+  }
+}

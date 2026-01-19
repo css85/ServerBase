@@ -1,0 +1,23 @@
+{
+  "DatabaseSettings": {
+    "DatabaseProviderType": "MySQL",
+    "GateConnectionStrings": [
+      "Server=localhost;Port=3306;Database=gate;User=test;Password=test;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "UserConnectionStrings": [
+      "Server=localhost;Port=3306;Database=user;User=test;Password=test;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "StoreEventConnectionStrings": [
+      "Server=localhost;Port=3306;Database=store_event;User=test;Password=test;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ]
+  },
+  "RedisConfiguration": {
+    "Hosts": [
+      {
+        "Host": "localhost",
+        "Port": "6400"
+      }
+    ],
+    "Password": "test"
+  }
+}

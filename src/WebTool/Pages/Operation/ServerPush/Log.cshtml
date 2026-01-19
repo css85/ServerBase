@@ -1,0 +1,132 @@
+﻿@page
+@model WebTool.Pages.Operation.ServerPush.LogModel
+@{
+    ViewData["Title"] = "푸시 로그";
+    ViewData["ActiveMenu"] = "/Operation/ServerPush/Log";
+}
+<div class="content-header">
+    <h1 class="text-dark">@ViewData["Title"]</h1>
+</div>
+
+@*<table id="push-table" class="table table-bordered table-striped table-hover dataTable dtr-inline" style="display: none">
+    <thead>
+        <tr>
+            @foreach (var columnInfo in WebTool.Controllers.ServerPushController.PushTableDataColumnInfos)
+        {
+            <th>
+                @columnInfo.Name
+            </th>
+        }
+        </tr>
+    </thead>
+</table>
+*@
+
+<div class="modal fade" id="modal-danger" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-danger">
+            <div class="modal-header">
+                <h4 class="modal-title">정말로 예약 취소 하시겠습니까? </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>…</p>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-light" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-light" id="deletePush">DeletePush</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+@section Styles
+{
+    <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+}
+
+@section Scripts
+{
+    
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script>
+        $(document).ready(function() {
+            var pushTable = $('#push-table');
+            pushTable.DataTable({
+                language: datatablesLangKor(),
+                autoWidth: false,
+                stateSave: true,
+                lengthMenu: [10, 15, 20, 30, 50, 100],
+                pageLength: 10,
+                processing: true,
+                serverSide: true,
+                searching: false,
+                ordering: false,
+                ajax: {
+                    url: '/api/operation/push/select-push-data',
+                    type: 'POST'
+                },
+
+                createdRow: function (row, data, dataIndex, cells) {
+                    if (data[9] != "send") {                        
+//                        $(cells[9]).html('<button type="button" class="btn btn-danger pl-2 pr-2" onclick="onCancelPushClicked(' + data[0] + ')"> 취소</button>');
+                        $(cells[9]).html('<button type="button" class="btn btn-danger pl-2 pr-2" data-toggle="modal" data-target="#modal-danger" data-pushidx = ' + data[0] + '> 취소</button>');
+//                       
+                    }
+                }
+
+            });
+            pushTable.show();
+        });
+
+
+        $('#modal-danger').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var pushidx = button.data('pushidx') // Extract info from data-* attributes
+            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+            var modal = $(this)
+            modal.find('.modal-title').text(pushidx + ' 번 푸시를 지우시겠습니까? ')
+
+            $('#deletePush').on('click', function () {
+                $.ajax({
+                    url: '/api/operation/push/delete-push-data',
+                    data: {
+                        seq: pushidx,                        
+                    },
+                    dataType: 'json',
+                    method: 'POST',
+                    success: function (resultSeq) {
+                        if (resultSeq === 0) {
+                            alert('취소 되었습니다.');
+                            location.reload();
+                        } else {
+                            if (resultSeq == 2)
+                                alert('이미 전송 되었습니다. ');
+                            else
+                                alert('error');
+                            location.reload();
+                        }
+                        $('#modal-danger').modal("hide");
+                    },
+                    error: function (xhr, status, error) {
+                        alert(xhr.status);       // 에러코드(404, 500 등)
+                        alert(xhr.responseText); // html 포맷의 에러 메시지
+                        alert(status);           // 'error'
+                        alert(error);            // 'Not Found'
+                    }
+                });
+            })
+        })
+
+        function onCancelPushClicked(idx) {
+            alert(idx);
+        }
+    </script>
+}

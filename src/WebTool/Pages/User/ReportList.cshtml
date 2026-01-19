@@ -1,0 +1,151 @@
+﻿@page
+@using WebTool.Controllers; 
+@model WebTool.Pages.User.ReportListModel
+@{
+    ViewData["Title"] = "신고 목록";
+    ViewData["ActiveMenu"] = "/User/ReportList";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div id="content-top">
+    <div class="row">
+        <div class="col-md-3 col-sm-12">
+            <div id="ReportStart" class="input-group" data-target-input="nearest">
+                <input type="text" id="ReportStartValue" class="form-control" data-target="#ReportStart" />
+                <div class="input-group-append" data-target="#ReportStart" data-toggle="datetimepicker">
+                    <div class="input-group-text">
+                        <i class="far fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a><strong>~</strong></a>
+        <div class="col-md-3 col-sm-12">
+            <div id="ReportEnd" class="input-group" data-target-input="nearest">
+                <input type="text" id="ReportEndValue" class="form-control" data-target="#ReportEnd" />
+                <div class="input-group-append" data-target="#ReportEnd" data-toggle="datetimepicker">
+                    <div class="input-group-text">
+                        <i class="far fa-calendar"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" id="Search" class="btn-secondary btn-lg button-margin">검색</button>
+        <button type="button" id="Excel" class="btn-secondary btn-lg button-margin">엑셀</button>
+    </div>
+</div>
+
+<div id="content-middle">
+    <div class="row">
+        <div class="col-12">
+            <table id="Report-table" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+                <thead>
+                    <tr>
+                        @foreach (var column in UserController.LoadReportInfo)
+                        {
+                            <th>
+                                @column.Name
+                            </th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2/css/select2.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
+    <style>
+        .button-margin {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script>
+        let reportTable = $('#Report-table');
+        let startValue = $('#ReportStartValue');
+        let endValue = $('#ReportEndValue');
+        let tableContent = null;
+        let searchButton = $('#Search');
+        let exportCsv = $('#Excel');
+
+        searchButton.click(function () {
+            searchReportList();
+        });
+
+        exportCsv.click(function () {
+
+        });
+
+        $(document).ready(function () {
+            $('#ReportStart').datetimepicker(dateTimePickerOption_UtcAddOneDay);
+            $('#ReportEnd').datetimepicker(dateTimePickerOption_UtcAddOneDay);
+        });
+
+        function searchReportList() {
+            if (tableContent !== null) {
+                reportTable.dataTable().clear().destory();
+            }
+
+            let from = startValue.val();
+            let to = endValue.val();
+
+            tableContent = reportTable.DataTable({
+                language: datatablesLangKor('신고자 ID', '신고자 닉네임', '피신고자 ID', '피신고자 닉네임', '신고 사유', '이미지', '신고한 메시지', '신고 일자', '처리 확인'),
+                autoWidth: false,
+                lengthChange: true,
+                paging: true,
+                searching: false,
+                info: false,
+                ordering: false,
+                pageLength: 10,
+                stateSave: true,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/api/user/load-report-table',
+                    type: 'POST',
+                    data: {
+                        from_dt: from,
+                        to_dt: to,
+                    },
+                    error: function (xhr, error, code) {
+                        alert(xhr.responseText);
+                    },
+                },
+                columnDefs: [
+                    {
+                        targets: 8,
+                        orderable: false,
+                    },
+                ],
+                createdRow: function (row, data, dataIndex, cells) {
+                    $(cells[5]).html(`<button type="button" class="btn btn-block btn-secondary btn-xs" onclick="selectImage('${data[0]}')">보기</button>`);
+                    $(cells[8]).html(`<button type="button" class="btn-block btn-secondary btn-xs" style="width:30%; display:inline;">반려</button>
+                                      <button type="button" class="btn-block btn-secondary btn-xs" style="width:30%; display:inline;">처리</button>`);
+                }
+            });
+        }
+
+        function selectImage(data) {
+
+        }
+    </script>
+}

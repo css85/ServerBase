@@ -1,0 +1,52 @@
+{
+  "profiles": {
+    "TestConsoleApp": {
+      "commandName": "Project",
+      "commandLineArgs": "shoppingmall --host \"http://192.168.54.192:24000\" --users 10 --createuser true --gradecheck true --purchasecount 10 --user-chat-delay 10000"
+    },
+    "TestShoppingMallApp": {
+      "commandName": "Project",
+      "commandLineArgs": "shoppingmall --host \"http://192.168.54.192:24000\" --users 50 --startid 0 --createuser true --gradecheck true --purchasecount 10 --cycle-delay 1"
+    },
+    "TestStoreApp": {
+      "commandName": "Project",
+      "commandLineArgs": "store --host \"http://192.168.54.130:35000\" --users 1 --startid 0 --cycle-delay 1"
+    },
+    "TestShowDancerApp": {
+      "commandName": "Project",
+      "commandLineArgs": "showdancer --host \"http://192.168.54.192:24000\" --users 100 --startid 0 --createuser true --purchasecount 10 --cycle-delay 0"
+    },
+    "TestMailApp": {
+      "commandName": "Project",
+      "commandLineArgs": "mail --host \"http://127.0.0.1:35000\" --users 11 --enable-deleteMail --cycle-delay 2"
+    },
+    "TestFriendApp": {
+      "commandName": "Project",
+      "commandLineArgs": "friend --host \"http://192.168.54.192:24000\" --users 100 --startid 0 --createuser true --validcheck true --cycle-delay 1"
+    },
+    "TestFamApp": {
+      "commandName": "Project",
+      "commandLineArgs": "fam --host \"http://192.168.54.192:24000\" --users 100 --startid 0 --createuser true --validcheck true --createfamrandomvalue 2 --joinfamrandomvalue 2 --leavefamrandomvalue 5 --cycle-delay 1"
+    },
+    "TestChatApp": {
+      "commandName": "Project",
+      "commandLineArgs": "chat --host \"http://192.168.54.9:45000\" --users 100 --startid 0 --createuser true --validcheck true --sendchatroommessagecount 10 --sendworldchatmessagecount 10 --createchatroomrandomvalue 10 --invitechatroomrandomvalue 10 --leavechatroomrandomvalue 10 --cycle-delay 1"
+    },
+    "TestTheMoveApp": {
+      "commandName": "Project",
+      "commandLineArgs": "themove --host \"http://192.168.54.130:24000\" --users 1000 --startid 0 --createuser true --validcheck true --creategameroomrandomvalue 5 --joingameroomrandomvalue 3 --leavegameroomrandomvalue 3 --cycle-delay 0"
+    },
+    "TestCoupleApp": {
+      "commandName": "Project",
+      "commandLineArgs": "couple --host \"http://192.168.54.192:24000\" --users 100 --startid 0 --createuser true --removecouplerequestrandomvalue 5 --couplerequestrandomvalue 5 --coupleacceptrandomvalue 5 --couplebreakrandomvalue 5 --cycle-delay 1"
+    },
+    "TestLoginApp": {
+      "commandName": "Project",
+      "commandLineArgs": "login --host \"http://127.0.0.1:35000\" --users 100 --cycle-delay 1000"
+    },
+    "TestSponsorChanceApp": {
+      "commandName": "Project",
+      "commandLineArgs": "sponsor --host \"http://13.228.85.5:21001\" --users 100 --player-count 100 --cycle-delay 100000000"
+    }
+  }
+}

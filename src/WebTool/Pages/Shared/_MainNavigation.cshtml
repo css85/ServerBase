@@ -1,0 +1,503 @@
+﻿@using static WebTool.Extensions.NavigationIndicatorExtensions;
+@using WebTool.Identity
+<aside class="main-sidebar sidebar-primary elevation-4" >
+    <a asp-page="/Index" class="brand-link">
+        <span class="brand-text font-weight">Eves GMTool</span>
+    </a>
+    <div class="sidebar">
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar nav-child-indent flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <li class="nav-item">
+                    <a asp-page="/Index" class="nav-link @Html.MakeDashboardMenuActive("/Index")">
+                        <i class="nav-icon fas fa-home"></i>
+                        <p>
+                            대시보드
+                        </p>
+                    </a>
+                </li>
+                @*<li class="nav-item @Html.MakeMenuOpen("/Indicator/")">
+                    <a href="#" class="nav-link nav @Html.MakeMenuActive("/Indicator/")">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>
+                            지표
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item @Html.MakeMenuOpen("/Indicator/Statistics")">
+                            <a href="#" class="nav-link nav @Html.MakeMenuActive("/Indicator/Statistics/")">
+                                <i class="nav-icon fas fa-chart-line"></i>
+                                <p>
+                                    통계 현황
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-page="/Indicator/Statistics/OsStatistics" class="nav-link @Html.MakeMenuActive("/Indicator/Statistics/OsStatistics")">
+                                        <i class="nav-icon fas fa-desktop"></i>
+                                        <p>
+                                            OS별 일/주/월간
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-page="/Indicator/Statistics/Realtime" class="nav-link @Html.MakeMenuActive("/Indicator/Statistics/Realtime")">
+                                        <i class="nav-icon fas fa-user-clock"></i>
+                                        <p>
+                                            실시간(시간단위)
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item @Html.MakeMenuOpen("/Indicator/Connection")">
+                            <a href="#" class="nav-link nav @Html.MakeMenuActive("/Indicator/Connection/")">
+                                <i class="nav=icon fas fa-link"></i>
+                                <p>
+                                    접속 현황
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-page="/Indicator/Connection/TotalConnection" class="nav-link @Html.MakeMenuActive("/Indicator/Connection/TotalConnection")">
+                                        <i class="nav-icon fas fa-plug"></i>
+                                        <p>
+                                            전체
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-page="/Indicator/Connection/UserSelection" class="nav-link @Html.MakeMenuActive("/Indicator/Connection/UserSelection")">
+                                        <i class="nav-icon fas fa-users"></i>
+                                        <p>
+                                            유저 지정
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-page="/Indicator/Connection/ConnectionSingleDay" class="nav-link @Html.MakeMenuActive("/Indicator/Connection/ConnectionSingleDay")">
+                                        <i class="nav-icon fas fa-calendar-day"></i>
+                                        <p>
+                                            일별 접속 목록
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item @Html.MakeMenuOpen("/Indicator/Users")">
+                            <a href="#" class="nav-link nav @Html.MakeMenuActive("/Indicator/Users/")">
+                                <i class="nav-icon fas fa-user"></i>
+                                <p>
+                                    유저 현황
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-page="/Indicator/Users/NewUserSingleDay" class="nav-link @Html.MakeMenuActive("/Indicator/Users/NewUserSingleDay")">
+                                        <i class="nav-icon fas fa-user"></i>
+                                        <p>
+                                            일별 신규 유입
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-page="/Indicator/Users/TotalUser" class="nav-link @Html.MakeMenuActive("/Indicator/Users/TotalUser")">
+                                        <i class="nav-icon fas fa-user"></i>
+                                        <p>
+                                            유저 통계
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-page="/Indicator/Users/Population" class="nav-link @Html.MakeMenuActive("/Indicator/Users/Population")">
+                                        <i class="nav-icon fas fa-user"></i>
+                                        <p>
+                                            인원/소비량 검색
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a asp-page="/Indicator/Other/RecordLogin" class="nav-link @Html.MakeMenuActive("/Indicator/Other/RecordLogin")">
+                                <i class="nav-icon fas fa-sign-in-alt"></i>
+                                <p>
+                                    로그인 기록
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-page="/Indicator/Other/RecordCostume" class="nav-link @Html.MakeMenuActive("/Indicator/Other/RecordCostume")">
+                                <i class="nav-icon fas fa-tshirt"></i>
+                                <p>
+                                    코스튬 현황
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-page="/Indicator/Other/RecordItem" class="nav-link @Html.MakeMenuActive("/Indicator/Other/RecordItem")">
+                                <i class="nav-icon fas fa-tshirt"></i>
+                                <p>
+                                    아이템 현황
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
+                   
+                <li class="nav-item @Html.MakeMenuOpen("/Operation/")">
+                    <a href="#" class="nav-link nav @Html.MakeMenuActive("/Operation/")">
+                        <i class="nav-icon fas fa-folder"></i>
+                        <p>
+                            운영
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a asp-page="/Operation/Notice/Notice" class="nav-link nav @Html.MakeMenuActive("/Operation/Notice/Notice")">
+                                <i class="nav-icon fas fa-exclamation-circle"></i>
+                                <p>
+                                    공지
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item @Html.MakeMenuOpen("/Operation/Event")">
+                            <a href="#" class="nav-link nav @Html.MakeMenuActive("/Operation/Event/")">
+                                <i class="nav-icon fas fa-folder"></i>
+                                <p>
+                                    이벤트
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-page="/Operation/Event/View" class="nav-link @Html.MakeMenuActive("/Operation/Event/View")">
+                                        <i class="nav-icon fas fa-table"></i>
+                                        <p>
+                                            조회
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                  
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item @Html.MakeMenuOpen("/Operation/ServerPush")">
+                            <a href="#" class="nav-link nav @Html.MakeMenuActive("/Operation/ServerPush/")">
+                                <i class="nav-icon fas fa-folder"></i>
+                                <p>
+                                    서버 푸시
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-page="/Operation/ServerPush/Send" class="nav-link @Html.MakeMenuActive("/Operation/ServerPush/Send")">
+                                        <i class="fas fa-paper-plane"></i>
+                                        <p>
+                                            발송
+                                        </p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-page="/Operation/ServerPush/Log" class="nav-link @Html.MakeMenuActive("/Operation/ServerPush/Log")">
+                                        <i class="nav-icon fas fa-table"></i>
+                                        <p>
+                                            로그
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item @Html.MakeMenuOpen("/Operation/Command")">
+                            <a href="#" class="nav-link nav @Html.MakeMenuActive("/Operation/Command/")">
+                                <i class="nav-icon fas fa-folder"></i>
+                                <p>
+                                    서버 커맨드(임시)
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-page="/Operation/Command/Send" class="nav-link @Html.MakeMenuActive("/Operation/Command/Send")">
+                                        <i class="fas fa-paper-plane"></i>
+                                        <p>
+                                            발송
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a asp-page="/Operation/Recall/RecallItem" class="nav-link nav @Html.MakeMenuActive("/Operation/Recall/RecallItem")">
+                                <i class="nav-icon fas fa-donate"></i>
+                                <p>
+                                    아이템 회수
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a asp-page="/Operation/Upload/Upload" class="nav-link nav @Html.MakeMenuActive("/Operation/Upload/Upload")">
+                                <i class="nav-icon fas fa-upload"></i>
+                                <p>
+                                    테이블 업로드
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item @Html.MakeMenuOpen("/Table/")">
+                    <a href="#" class="nav-link nav @Html.MakeMenuActive("/Table/")">
+                        <i class="nav-icon fas fa-folder"></i>
+                        <p>
+                            테이블
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a asp-page="/Table/Music/Index" class="nav-link @Html.MakeMenuActive("/Table/Music/Index")">
+                                <i class="nav-icon fas fa-table"></i>
+                                <p>
+                                    음악
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-page="/Table/Costume/Index" class="nav-link @Html.MakeMenuActive("/Table/Costume/Index")">
+                                <i class="nav-icon fas fa-table"></i>
+                                <p>
+                                    코스튬
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>*@
+                <li class="nav-item @Html.MakeMenuOpen("/User/")">
+                    <a href="#" class="nav-link nav @Html.MakeMenuActive("/User/")">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            유저
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a asp-page="/User/UserInfo" class="nav-link @Html.MakeMenuActive("/User/UserInfo")">
+                                <i class="nav-icon fas fa-user-cog"></i>
+                                <p>
+                                    유저 통합 정보
+                                </p>
+                            </a>
+                        </li>
+                        @*<li class="nav-item">
+                            <a asp-page="/User/FamInfo" class="nav-link @Html.MakeMenuActive("/User/FamInfo")">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>
+                                    팸 통합 정보
+                                </p>
+                            </a>
+                        </li>*@
+                        <li class="nav-item">
+                            <a asp-page="/User/ReportList" class="nav-link @Html.MakeMenuActive("/User/ReportList")">
+                                <i class="nav-icon fas fa-user-secret"></i>
+                                <p>
+                                    신고 목록
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-page="/User/SendItem" class="nav-link @Html.MakeMenuActive("/User/SendItem")">
+                                <i class="nav-icon fas fa-donate"></i>
+                                <p>
+                                    아이템 지급
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-page="/User/ListSendItem" class="nav-link @Html.MakeMenuActive("/User/ListSendItem")">
+                                <i class="nav-icon fas fa-donate"></i>
+                                <p>
+                                    아이템 지급 리스트
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-page="/User/UserBlock" class="nav-link @Html.MakeMenuActive("/User/UserBlock")">
+                                <i class="nav-icon fas fa-shield-alt"></i>
+                                <p>
+                                    유저 블록/해제
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-page="/User/UserKick" class="nav-link @Html.MakeMenuActive("/User/UserKick")">
+                                <i class="nav-icon fas fa-door-closed"></i>
+                                <p>
+                                    유저 킥
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a asp-page="/Server/Index" class="nav-link @Html.MakeMenuActive("/Server/Index")">
+                        <i class="nav-icon fas fa-server"></i>
+                        <p>
+                            서버
+                        </p>
+                    </a>
+                </li>
+               @* <li class="nav-item @Html.MakeMenuOpen("/Server/Index")">
+                    <ul class="nav-treeview">
+                        <li class="nav-item @Html.MakeMenuOpen("/Server/Config/")">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-cog"></i>
+                                <p>
+                                    설정
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav-treeview @Html.MakeMenuOpen("/Server/Config/HotTime/")">
+                                <li class="nav-item">
+                                    <a asp-page="/Server/Config/HotTime/Index" class="nav-link @Html.MakeMenuActive("/Server/Config/HotTime/Index")">
+                                        <i class="nav-icon fas fa-tools"></i>
+                                        <p>
+                                            핫타임
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="nav-treeview @Html.MakeMenuOpen("/Server/Config/Coupon/")">
+                                <li class="nav-item">
+                                    <a asp-page="/Server/Config/Coupon/Index" class="nav-link @Html.MakeMenuActive("/Server/Config/Coupon/Index")">
+                                        <i class="nav-icon fas fa-barcode"></i>
+                                        <p>
+                                            쿠폰
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>*@
+                <li class="nav-item @Html.MakeMenuOpen("/Server/Index")">
+                    <ul class="nav-treeview">
+                        <li class="nav-item @Html.MakeMenuOpen("/Server/Maintenance/")">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-clipboard-check"></i>
+                                <p>
+                                    점검
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav-treeview @Html.MakeMenuOpen("/Server/Maintenance/Version/Gate/")">
+                                <li class="nav-item">
+                                    <a asp-page="/Server/Maintenance/Version/Gate" class="nav-link @Html.MakeMenuActive("/Server/Maintenance/Version/Gate")">
+                                        <i class="nav-icon fas fa-door-open"></i>
+                                        <p>게이트</p>
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="nav-treeview @Html.MakeMenuOpen("/Server/Maintenance/Version/")">
+                                <li class="nav-item">
+                                    <a asp-page="/Server/Maintenance/Version/Index" class="nav-link @Html.MakeMenuActive("/Server/Maintenance/Version/Index")">
+                                        <i class="nav-icon fas fa-code-branch"></i>
+                                        <p>
+                                            앱 버전 관리
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="nav-treeview @Html.MakeMenuOpen("/Server/Maintenance/Version/")">
+                                <li class="nav-item">
+                                    <a asp-page="/Server/Maintenance/Version/BundleVersion" class="nav-link @Html.MakeMenuActive("/Server/Maintenance/Version/BundleVersion")">
+                                        <i class="nav-icon fas fa-code-branch"></i>
+                                        <p>
+                                            번들 버전 관리
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                            <ul class="nav-treeview @Html.MakeMenuOpen("/Server/Maintenance/WhiteList/")">
+                                <li class="nav-item">
+                                    <a asp-page="/Server/Maintenance/WhiteList/Index" class="nav-link @Html.MakeMenuActive("/Server/Maintenance/WhiteList/Index")">
+                                        <i class="nav-icon fas fa-user-shield"></i>
+                                        <p>
+                                            화이트 리스트 관리
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                @*<li class="nav-item @Html.MakeMenuOpen("/Channel/")">
+                    <a href="#" class="nav-link @Html.MakeMenuActive("/Channel/")">
+                        <i class="nav-icon fas fa-window-restore"></i>
+                        <p>
+                            채널
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a asp-page="/Channel/ChannelList" class="nav-link @Html.MakeMenuActive("/Channel/ChannelList")">
+                                <i class="nav-icon fas fa-window-restore"></i>
+                                <p>
+                                    채널 목록
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a asp-page="/Channel/Room" class="nav-link @Html.MakeMenuActive("/Channel/Room")">
+                                <i class="nav-icon fas fa-gamepad"></i>
+                                <p>
+                                    방 목록
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>*@
+                <li class="nav-item">
+                    <a asp-page="/Admin/Index" class="nav-link @Html.MakeMenuActive("/Admin/Index")">
+                        <i class="nav-icon fas fa-users-cog"></i>
+                        <p>
+                            계정관리
+                        </p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</aside>

@@ -1,0 +1,161 @@
+﻿@page
+@model WebTool.Pages.Indicator.RemainRateModel
+@{
+    ViewData["Title"] = "잔존율";
+    ViewData["ActiveMenu"] = "/Indicator/Other/RemainRate";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="row paragraph">
+    <div class="col-12 paragraph">
+        <button type="button" id="dayremain" class="btn btn-info btn-lg space">일일 잔존율</button>
+        <button type="button" id="weekremain" class="btn btn-info btn-lg space">주간 잔존율</button>
+        <button type="button" id="dayattend" class="btn btn-info btn-lg space">일별 출석</button>
+        <button type="button" id="daychainattend" class="btn btn-info btn-lg space">일별 연속 출석</button>
+    </div>
+</div>
+
+<div id="dayremain-content" class="row">
+    <div class="col-12 paragraph">
+        <button type="button" id="search-dayremain" class="btn btn-secondary btn-sm space">검색</button>
+    </div>
+    <div class="col-12">
+        <table id="table-dayremain" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+            <thead>
+                <tr>
+                    @for (var i = 0; i < Model.thDayRemain.Length; i++)
+                    {
+                        <th>@Model.thDayRemain[i]</th>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div id="weekremain-content" class="row">
+    <div class="col-12 paragraph">
+        <button type="button" id="search-weekremain" class="btn btn-secondary btn-sm space">검색</button>
+    </div>
+    <div class="col-12">
+        <table id="table-weekremain" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+            <thead>
+                <tr>
+                    @for (var i = 0; i < Model.thWeekRemain.Length; i++)
+                    {
+                        <th>@Model.thWeekRemain[i]</th>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div id="dayattend-content" class="row">
+    <div class="col-md-3 col-sm-12">
+        <div id="DayAttendDate" class="input-group" data-target-input="nearest">
+            <input type="text" id="DayAttendDateValue" class="form-control" data-target="#DayAttendDate" />
+            <div class="input-group-append" data-target="#DayAttendDate" data-toggle="datetimepicker">
+                <div class="input-group-text">
+                    <i class="far fa-calendar"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" id="dayAttendSearch" class="btn btn-secondary btn-sm space">검색</button>
+    <div class="col-12" style="margin-top: 30px;">
+        <table id="table-dayattend" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+            <thead>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+<div id="daychainattend-content" class="row">
+    <div class="col-md-3 col-sm-12">
+        <div id="DayChainAttendDate" class="input-group" data-target-input="nearest">
+            <input type="text" id="DayChainAttendDateValue" class="form-control" data-target="#DayChainAttendDate" />
+            <div class="input-group-append" data-target="#DayChainAttendDate" data-toggle="datetimepicker">
+                <div class="input-group-text">
+                    <i class="far fa-calendar"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" id="dayChainAttendSearch" class="btn btn-secondary btn-sm space">검색</button>
+    <div class="col-12" style="margin-top: 30px;">
+        <table id="table-daychainattend" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+            <thead>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+@section Styles {
+    <style>
+        .space {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .paragraph {
+            margin-bottom: 30px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css"></script>
+    <script>
+        let contentArray = new Array(4).fill(null);
+        contentArray[0] = $('#dayremain-content');
+        contentArray[1] = $('#weekremain-content');
+        contentArray[2] = $('#dayattend-content');
+        contentArray[3] = $('#daychainattend-content');
+
+        let btnDayRemain = $('#dayremain');
+        let btnWeekRemain = $('#weekremain');
+        let btnDayAttend = $('#dayattend');
+        let btnDayChainAttend = $('#daychainattend');
+
+        $(document).ready(function () {
+            $('#DayAttendDate').datetimepicker(dateTimePickerOption_UtcNow_WithoutTime);
+            $('#DayChainAttendDate').datetimepicker(dateTimePickerOption_UtcNow_WithoutTime);
+        });
+
+        btnDayRemain.click(function () {
+            showContent(0);
+        });
+        btnWeekRemain.click(function () {
+            showContent(1);
+        });
+        btnDayAttend.click(function () {
+            showContent(2);
+        });
+        btnDayChainAttend.click(function () {
+            showContent(3);
+        });
+
+        $(document).ready(function () {
+            showContent(0);
+        });
+
+        function showContent(index) {
+            for (var i = 0; i < contentArray.length; i++) {
+                contentArray[i].hide();
+            }
+
+            contentArray[index].show();
+        }
+
+    </script>
+}

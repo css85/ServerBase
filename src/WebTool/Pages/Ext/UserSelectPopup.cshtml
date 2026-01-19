@@ -1,0 +1,109 @@
+﻿@page
+@model WebTool.Pages.Ext.UserSelectPopupModel
+@{
+    Layout = "_LayoutContentsOnly";
+    ViewData["Title"] = "유저 선택";
+}
+
+<div class="row" style="margin-bottom: -40px;">
+    <div class="col-3">
+        <select id="searchTypeSelect" style="width: 100%;">
+            <option value="id">ID</option>
+            <option value="name">닉네임</option>
+        </select>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <table id="userTable" class="table table-bordered table-striped table-hover dataTable dtr-inline">
+            <thead>
+            <tr>
+                @foreach (var columnInfo in WebTool.Controllers.UserController.SimpleUserTableDataColumnInfos)
+                {
+                    <th>
+                        @columnInfo.Name
+                    </th>
+                }
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+@section Styles
+{
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2/css/select2.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
+    <link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+
+    <style>
+        .select2-container--default .select2-results > .select2-results__options {
+            max-height: 400px;
+        }
+        .select2-container--default {
+            z-index: 1
+        }
+    </style>
+}
+
+@section Scripts
+{
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css"></script>
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/js/extensions/datatables/lang.js"></script>
+    <script>
+        var userTable = null;
+
+        $(document).ready(function () {
+            $('#searchTypeSelect').select2();
+            $('#searchTypeSelect').on('select2:select',
+                function (e) {
+                    if (userTable !== null) {
+                        userTable.ajax.reload();
+                    }
+                });
+
+            userTable = $('#userTable').DataTable({
+                language: datatablesLangKor('검색'),
+                autoWidth: false,
+                stateSave: false,
+                lengthMenu: [10, 13, 20, 30, 50, 100],
+                pageLength: 10,
+                processing: true,
+                serverSide: true,
+                info: false,
+                paging: false,
+                ajax: {
+                    url: '/api/user/simple-user-table-data',
+                    type: 'POST',
+                    data: {
+                        'searchType': function() {
+                            return $('#searchTypeSelect').select2('data')[0].id;
+                        }
+                    }
+                },
+                columnDefs: [
+                    {
+                        targets: 2,
+                        orderable: false
+                    }
+                ],
+                createdRow: function (row, data, dataIndex, cells) {
+                    $(cells[2]).html(`<button type="button" class="btn btn-block btn-primary btn-xs" onclick="selectItem('${data[0]}')">선택</button>`);
+                }
+            });
+        });
+
+        function selectItem(userSeq) {
+            window.opener.onUserSelected(userSeq);
+            window.close();
+        }
+    </script>
+}

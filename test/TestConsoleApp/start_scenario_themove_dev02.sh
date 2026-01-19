@@ -1,0 +1,1 @@
+dotnet ./TestConsoleApp.dll themove --host "http://192.168.54.9:45000" --users 100 --startid 0 --createuser true --validcheck true --creategameroomrandomvalue 5 --joingameroomrandomvalue 3 --leavegameroomrandomvalue 3 --cycle-delay 0

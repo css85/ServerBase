@@ -1,0 +1,23 @@
+{
+  "DatabaseSettings": {
+    "DatabaseProviderType": "LocalDB",
+    "GateConnectionStrings": [
+      "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=testing.gate;Trusted_Connection=True;"
+    ],
+    "UserConnectionStrings": [
+      "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=testing.user;Trusted_Connection=True;"
+    ],
+    "StoreEventConnectionStrings": [
+      "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=testing.store_event;Trusted_Connection=True;"
+    ]
+  },
+  "RedisConfiguration": {
+    "Hosts": [
+      {
+        "Host": "localhost",
+        "Port": "7379"
+      }
+    ],
+    "PoolSize": 10
+  }
+}

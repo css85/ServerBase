@@ -1,0 +1,264 @@
+﻿@page
+@model WebTool.Pages.Operation.Recall.RecallItemModel
+@{
+    ViewData["Title"] = "아이템 회수";
+    ViewData["ActiveMenu"] = "/Operation/Recall/RecallItem";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<table class="table table-bordered text-center">
+    <tbody>
+        <tr>
+            <td>
+                <strong>내용</strong>
+            </td>
+            <td>
+                <div class="row">
+                    <div class="col-md-12">
+                        <input type="text" class="form-control" id="commentText">
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>대상</strong>
+            </td>
+            <td>
+                <div class="row">
+                    <div class="col-md-11">
+                        <textarea id="sendTargetText" class="form-control" rows="3" placeholder=""></textarea>
+                    </div>
+                    <div class="col-md-1">
+                        <button id="sendTargetButton" type="button" class="btn btn-block btn-primary btn-lg" style="height: 100%" onclick="onTargetSelectClicked()">+</button>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-12">
+                        <div>
+                            <div class="icheck-primary d-inline mr-2">
+                                <input type="radio" id="sendTargetRadio1" name="sendTargetRadio" value="1">
+                                <label for="sendTargetRadio1">
+                                    모든 유저
+                                </label>
+                            </div>
+                            <div class="icheck-primary d-inline mr-2">
+                                <input type="radio" id="sendTargetRadio2" name="sendTargetRadio" value="2" checked="">
+                                <label for="sendTargetRadio2">
+                                    유저 직접 입력
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div>
+                            <div class="icheck-primary d-inline mr-2">
+                                <input type="radio" id="sendTargetRadio3" name="sendTargetRadio" value="3">
+                                <label for="sendTargetRadio3">
+                                    모든 커플
+                                </label>
+                            </div>
+                            <div class="icheck-primary d-inline mr-2">
+                                <input type="radio" id="sendTargetRadio4" name="sendTargetRadio" value="4">
+                                <label for="sendTargetRadio4">
+                                    커플 직접 입력
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div>
+                            <div class="icheck-primary d-inline mr-2">
+                                <input type="radio" id="sendTargetRadio5" name="sendTargetRadio" value="5">
+                                <label for="sendTargetRadio5">
+                                    모든 팸
+                                </label>
+                            </div>
+                            <div class="icheck-primary d-inline mr-2">
+                                <input type="radio" id="sendTargetRadio6" name="sendTargetRadio" value="6">
+                                <label for="sendTargetRadio6">
+                                    팸 직접 입력
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 150px;">
+                <strong>아이템 회수</strong>
+            </td>
+            <td>
+                <div class="row">
+                    <div class="col mb-2">
+                        <input type="hidden" id="itemSelectValue" value=""/>
+                        <button type="button" id="itemSelectButton" class="btn btn-primary" onclick="onItemSelectClicked()">아이템 선택</button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="row" style="flex-direction: row-reverse;">
+    <button type="button" class="btn btn-primary pl-5 pr-5" onclick="recallItem()">회수</button>
+</div>
+
+<div id="loading" style="display: none;">
+    <div class="overlay modal d-flex justify-content-center align-items-center" style="background: #00000055;">
+        <i class="fas fa-2x fa-sync fa-spin"></i>
+    </div>
+</div>
+
+@section Styles
+{
+    <link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2/css/select2.min.css" />
+    <link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css" />
+    <style>
+        table tr td {
+            vertical-align: middle !important;
+        }
+    </style>
+}
+
+@section Scripts
+{
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css"></script>
+    <script>
+        $(document).ready(function () {
+            initSendTargetRadio();
+        });
+
+        function initSendTargetRadio() {
+            $('input[name=sendTargetRadio]').change(function() {
+                onSendTargetRadioChanged();
+            });
+            onSendTargetRadioChanged();
+        }
+
+        function onSendTargetRadioChanged() {
+            let sendTargetRadioValue = $('input[name=sendTargetRadio]:checked').val();
+            if (sendTargetRadioValue === '1') {
+                $('#sendTargetText').val('/AllUsers');
+                $('#sendTargetText').prop('disabled', true);
+                $('#sendTargetButton').prop('disabled', true);
+                $('#sendTargetText').prop('disabled', true);
+            } else if (sendTargetRadioValue === '3') {
+                $('#sendTargetText').val('/AllCouples');
+                $('#sendTargetText').prop('disabled', true);
+                $('#sendTargetButton').prop('disabled', true);
+            } else if (sendTargetRadioValue === '5') {
+                $('#sendTargetText').val('/AllFams');
+                $('#sendTargetText').prop('disabled', true);
+                $('#sendTargetButton').prop('disabled', true);
+            } else {
+                if (sendTargetRadioValue === '2') {
+                    $('#sendTargetText').prop('placeholder', "';'으로 구분된 userSeq");
+                } else if (sendTargetRadioValue === '4') {
+                    $('#sendTargetText').prop('placeholder', "';'으로 구분된 coupleSeq");
+                } else if (sendTargetRadioValue === '6') {
+                    $('#sendTargetText').prop('placeholder', "';'으로 구분된 famSeq");
+                }
+                $('#sendTargetText').val('');
+                $('#sendTargetText').prop('disabled', false);
+                $('#sendTargetButton').prop('disabled', false);
+            }
+        }
+
+        function onItemSelectClicked() {
+            openItemSelectPopup(0,
+                function(index, name, value) {
+                    $('#itemSelectCheckbox').prop('checked', true);
+                    $('#itemSelectButton').html(name);
+                    $('#itemSelectValue').val(value);
+                });
+        }
+
+        function onTargetSelectClicked() {
+            let sendTargetRadioValue = $('input[name=sendTargetRadio]:checked').val();
+            if (sendTargetRadioValue === '2') {
+                openUserSelectPopup(
+                    function (userSeq) {
+                        let currentText = $('#sendTargetText').val();
+                        if (currentText !== '') {
+                            currentText += `;${userSeq}`;
+                        } else {
+                            currentText = `${userSeq}`;
+                        }
+                        $('#sendTargetText').val(currentText);
+                    });
+            }
+            else if (sendTargetRadioValue === '4') {
+                openCoupleSelectPopup(
+                    function (coupleSeq) {
+                        let currentText = $('#sendTargetText').val();
+                        if (currentText !== '') {
+                            currentText += `;${coupleSeq}`;
+                        } else {
+                            currentText = `${coupleSeq}`;
+                        }
+                        $('#sendTargetText').val(currentText);
+                    });
+            }
+            else if (sendTargetRadioValue === '6') {
+                openFamSelectPopup(
+                    function (famSeq) {
+                        let currentText = $('#sendTargetText').val();
+                        if (currentText !== '') {
+                            currentText += `;${famSeq}`;
+                        } else {
+                            currentText = `${famSeq}`;
+                        }
+                        $('#sendTargetText').val(currentText);
+                    });
+            }
+        }
+
+        function recallItem() {
+            let commentText = $('#commentText').val();
+            let sendTargetType = $('input[name=sendTargetRadio]:checked').val();
+            let sendTargetText = $('#sendTargetText').val();
+            let item = $('#itemSelectValue').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/recall/recall-item',
+                data: {
+                    commentText: commentText,
+                    sendTargetType: sendTargetType,
+                    sendTargetText: sendTargetText,
+                    itemText: item,
+                },
+                success: function (response) {
+                    alert('성공');
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert('실패\n' + xhr.responseText);
+                },
+                complete: function (response) {
+                    $('#editModal').modal('hide');
+                    endLoading();
+                }
+            });
+        }
+
+        function startLoading() {
+            $('#loading').show();
+        }
+
+        function endLoading() {
+            $('#loading').hide();
+        }
+    </script>
+}

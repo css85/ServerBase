@@ -1,0 +1,25 @@
+{
+  "DatabaseSettings": {
+    "DatabaseProviderType": "LocalDB",
+    "GateConnectionStrings": [
+      "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=mfl_testing.gate;Trusted_Connection=True;"
+    ],
+    "UserConnectionStrings": [
+      "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=mfl_testing.user;Trusted_Connection=True;"
+    ],
+    "StoreEventConnectionStrings": [
+      "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=mfl_testing.store_event;Trusted_Connection=True;"
+    ],
+    "RedisAdmin": "localhost:6379,abortConnect=false,allowAdmin=true",
+    "RedisAdminHostAndPort": "localhost:6379"
+  },
+  "RedisConfiguration": {
+    "Hosts": [
+      {
+        "Host": "localhost",
+        "Port": "6400"
+      }
+    ],
+    "PoolSize": 10
+  }
+}

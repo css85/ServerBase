@@ -1,0 +1,52 @@
+// migrations
+dotnet-ef migrations add edit_user_auto_increments_01 -c UserCtx -- --environment Development3 --index 0;
+
+
+//script
+dotnet-ef migrations script -c ExchangeCtx
+
+//update
+dotnet-ef database update -c ExchangeCtx -- --environment Development --index 0;
+dotnet-ef database update -c UserCtx -- --environment Development --index 0;
+dotnet-ef database update -c AccountCtx -- --environment Development --index 0;
+dotnet-ef database update -c ChatCtx -- --environment Development --index 0;
+dotnet-ef database update -c MailCtx -- --environment Development --index 0;
+dotnet-ef database update -c GateCtx -- --environment Development --index 0;
+
+
+
+dotnet-ef database update -c ExchangeCtx --  --index 0;
+dotnet-ef database update -c UserCtx --  --index 0;
+dotnet-ef database update -c AccountCtx -- --index 0;
+dotnet-ef database update -c ChatCtx --  --index 0;
+dotnet-ef database update -c MailCtx --  --index 0;
+dotnet-ef database update -c GateCtx --  --index 0;
+//shard
+dotnet-ef database update -c ExchangeCtx -- --environment Development3 --index 0;
+dotnet-ef database update -c GateCtx -- --environment Development3 --index 0;
+dotnet-ef database update -c AccountCtx -- --environment Development3 --index 0;
+dotnet-ef database update -c UserCtx -- --environment Development3 --index 0;
+dotnet-ef database update -c ChatCtx -- --environment Development3 --index 0;
+dotnet-ef database update -c MailCtx -- --environment Development3 --index 0;
+
+# dotnet-ef database update -c ExchangeCtx -- --environment Development3 --index 1;
+# dotnet-ef database update -c GateCtx -- --environment Development3 --index 1;
+# dotnet-ef database update -c AccountCtx -- --environment Development3 --index 1;
+dotnet-ef database update -c UserCtx -- --environment Development3 --index 1;
+dotnet-ef database update -c ChatCtx -- --environment Development3 --index 1;
+dotnet-ef database update -c MailCtx -- --environment Development3 --index 1;
+
+//db 삭제
+dotnet-ef database drop -c ExchangeCtx -- --environment Development3 --index 0;
+dotnet-ef database drop -c GateCtx -- --environment Development3 --index 0;
+dotnet-ef database drop -c AccountCtx -- --environment Development3 --index 0;
+dotnet-ef database drop -c UserCtx -- --environment Development3 --index 0;
+dotnet-ef database drop -c ChatCtx -- --environment Development3 --index 0;
+dotnet-ef database drop -c MailCtx -- --environment Development3 --index 0;
+
+# dotnet-ef database drop -c ExchangeCtx -- --environment Development3 --index 1;
+# dotnet-ef database drop -c GateCtx -- --environment Development3 --index 1;
+# dotnet-ef database drop -c AccountCtx -- --environment Development3 --index 1;
+dotnet-ef database drop -c UserCtx -- --environment Development3 --index 1;
+dotnet-ef database drop -c ChatCtx -- --environment Development3 --index 1;
+dotnet-ef database drop -c MailCtx -- --environment Development3 --index 1;

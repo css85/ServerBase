@@ -1,0 +1,79 @@
+﻿@page
+@model WebTool.Pages.Indicator.RecordLoginModel
+@{
+    ViewData["Title"] = "로그인 기록";
+    ViewData["ActiveMenu"] = "/Indicator/Other/RecordLogin";
+}
+
+<div class="row mb-2">
+    <div class="content-header">
+        <h1 class="text-dark">@ViewData["Title"]</h1>
+    </div>
+</div>
+
+<div class="row paragraph">
+    <div class="col-md-3 col-sm-12">
+        <div id="StartDate" class="input-group" data-target-input="nearest">
+            <input type="text" id="StartDateValue" class="form-control" data-target="#StartDate" />
+            <div class="input-group-append" data-target="#StartDate" data-toggle="datetimepicker">
+                <div class="input-group-text">
+                    <i class="far fa-calendar"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a><strong>~</strong></a>
+    <div class="col-md-3 col-sm-12">
+        <div id="EndDate" class="input-group" data-target-input="nearest">
+            <input type="text" id="EndDateValue" class="form-control" data-target="#EndDate" />
+            <div class="input-group-append" data-target="#EndDate" data-toggle="datetimepicker">
+                <div class="input-group-text">
+                    <i class="far fa-calendar"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" id="search" class="btn btn-secondary space">검색</button>
+    <button type="button" id="yesterday" class="btn btn-secondary space">어제</button>
+</div>
+
+<div class="row">
+    <button type="button" id="export" class="btn btn-secondary paragraph">엑셀</button>
+    <div class="col-12">
+        <table id="table-record-login" class="table table-bordered table-striped table-hover dataTable dtr-inline text-center">
+            <thead>
+                <tr>
+                    @for (var i = 0; i < Model.columnHeader.Length; i++)
+                    {
+                        <td>@Model.columnHeader[i]</td>
+                    }
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .space {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .paragraph {
+            margin-bottom: 30px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="~/plugins/select2/js/select2.min.js"></script>
+    <script src="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css"></script>
+    <script>
+        $(document).ready(function () {
+            $('#StartDate').datetimepicker(dateTimePickerOption_UtcNow_WithoutTime);
+            $('#EndDate').datetimepicker(dateTimePickerOption_UtcNow_WithoutTime);
+        });
+    </script>
+}

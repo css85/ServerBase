@@ -1,0 +1,23 @@
+﻿{
+  "DatabaseSettings": {
+    "DatabaseProviderType": "MySQL",
+    "GateConnectionStrings": [
+      "Server=192.168.0.217;Port=3306;Database=gate;User=root;Password=Xmdnpfqmahajscm12;SslMode=None;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "UserConnectionStrings": [
+      "Server=192.168.0.217;Port=3306;Database=eve;User=root;Password=Xmdnpfqmahajscm12;SslMode=None;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "StoreEventConnectionStrings": [
+      "Server=192.168.0.217;Port=3306;Database=eve_store_event;User=root;Password=Xmdnpfqmahajscm12;SslMode=None;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+    ],
+    "WebToolConnectionString": "Server=192.168.0.217;Port=3306;Database=tool;User=root;Password=Xmdnpfqmahajscm12;Connect Timeout=30;Min Pool Size=0;Max Pool Size=100;ConnectionReset=true;"
+  },
+  "RedisConfiguration": {
+    "Hosts": [
+      {
+        "Host": "redis-f3567a9a-0684-4ead-9f36-9fe57f06faa0.ap-southeast-3.dcs.myhuaweicloud.com",
+        "Port": "6379"
+      }
+    ]
+  }
+}

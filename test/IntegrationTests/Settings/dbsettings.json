@@ -1,0 +1,47 @@
+{
+  "DatabaseSettings": {
+    "DatabaseProviderType": "LocalDB",
+    "GateConnectionStrings": [
+      "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=audition_m_testing.gate;Trusted_Connection=True;"
+    ],
+    "ExchangeConnectionStrings": [
+      "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=audition_m_testing.app;Trusted_Connection=True;"
+    ],
+    "AccountConnectionStrings": [
+      "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=audition_m_testing.account;Trusted_Connection=True;"
+    ],
+    "UserConnectionStrings": [
+      "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=audition_m_testing.user;Trusted_Connection=True;"
+    ],
+    "WalletConnectionStrings": [
+      "Server=(localdb)\\MSSQLLocalDB;Initial Catalog=audition_m_testing.wallet;Trusted_Connection=True;"
+    ],    
+    "RedisAdmin": "localhost:6379,abortConnect=false,allowAdmin=true",
+    "RedisAdminHostAndPort": "localhost:6379"
+  },
+  "RedisConfiguration": {
+    "AbortOnConnectFail": true,
+    "Password": "my_super_secret_password",
+    "AllowAdmin": false,
+    "Ssl": false,
+    "ConnectTimeout": 10000,
+    "SyncTimeout": 10000,
+    "ConnectRetry": 2,
+    "Database": 0,
+    // "ServiceName": "redis", // In case you are using Sentinel
+    "Hosts": [
+      {
+        "Host": "localhost",
+        "Port": "6379"
+      }
+    ],
+    "ServerEnumerationStrategy": {
+      "Mode": "All",
+      "TargetRole": "Any",
+      "UnreachableServerAction": "Throw"
+    },
+    "MaxValueLength": 1024,
+    "PoolSize": 10,
+    "KeyPrefix": "_"
+  }
+}
